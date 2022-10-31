@@ -10,7 +10,12 @@ enum loctype {
     HabitatPartage
 }
 
-let interest = [
+let interest : {position: [lat: number, long: number]
+                url: string,
+                label: string,
+                type: loctype
+                } = 
+[
     { 
         position: [48.7464092,1.0472644],
         label: "Ecole les roseaux de Verneuil",
