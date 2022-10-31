@@ -77,8 +77,8 @@ export const Map: React.FC = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {interest.map(interest => {
-                return <Marker position={interest.position}>
+            {interest.map((interest, index) => {
+                return <Marker key={index} position={interest.position}>
                         <Popup>
                             {interest.url 
                                 ? <a href={interest.url} target="_new">{interest.label}</a> 
