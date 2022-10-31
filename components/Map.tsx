@@ -11,10 +11,10 @@ enum loctype {
 }
 
 let interest : {position: [lat: number, long: number]
-                url: string,
+                url?: string,
                 label: string,
-                type: loctype
-                } = 
+                type?: loctype
+                }[] = 
 [
     { 
         position: [48.7464092,1.0472644],
