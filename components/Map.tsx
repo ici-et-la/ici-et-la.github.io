@@ -4,16 +4,27 @@ import "leaflet/dist/leaflet.css";
 /*
 */
 
-enum loctype {
-    Ecole,
-    OffreImmo,
-    HabitatPartage
+import * as L from "leaflet";
+
+
+  const defaultIcon = new L.Icon.Default(),
+  schoolIcon = new L.Icon({
+      iconUrl: "/map-pins/map-pin-kids.svg",
+      iconAnchor:   [12, 34],
+      iconSize: [24, 34],
+    })
+;
+
+let loctype = {
+    Ecole: schoolIcon,
+    OffreImmo: defaultIcon,
+    HabitatPartage: defaultIcon
 }
 
 let interest : {position: [lat: number, long: number]
                 url?: string,
                 label: string,
-                type?: loctype
+                type?: L.Icon
                 }[] = 
 [
     { 
@@ -48,14 +59,21 @@ let interest : {position: [lat: number, long: number]
     {
         position: [48.1300553,-2.1535194],
         url: "https://www.bretagne-grainedesens.bzh/",
-        label: "Graines de Sens"
+        label: "Graines de Sens",
+        type    : loctype.Ecole
     },
     {
         position: [47.91039,-1.826753],
         url: "https://ecolenoesis.org/",
-        label: "Ecole Noesis"
+        label: "Ecole Noesis",
+        type    : loctype.Ecole
+    },
+    {
+        position: [43.5965115,-1.3488512],
+        label   : "Enfants sous les Pins",
+        type    : loctype.Ecole,
+        url     : "http://enfantssouslespins.com/"
     }
-    
     
 ] 
  
@@ -78,7 +96,7 @@ export const Map: React.FC = () => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             {interest.map((interest, index) => {
-                return <Marker key={index} position={interest.position}>
+                return <Marker key={index} position={interest.position} icon={interest.type ? interest.type : defaultIcon}>
                         <Popup>
                             {interest.url 
                                 ? <a href={interest.url} target="_new">{interest.label}</a> 
@@ -95,11 +113,6 @@ export const Map: React.FC = () => {
             <Marker position={[48.3265023,-3.7932969]}>
             <Popup>
                 Tremargat
-            </Popup>
-            </Marker>
-            <Marker position={[43.5965115,-1.3488512]}>
-            <Popup>
-                <a href="http://enfantssouslespins.com/" target='_new'>Enfants sous les Pins</a>
             </Popup>
             </Marker>
         </MapContainer>
