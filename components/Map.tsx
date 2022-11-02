@@ -7,26 +7,54 @@ import "leaflet/dist/leaflet.css";
 import * as L from "leaflet";
 
 
-  const defaultIcon = new L.Icon.Default(),
-  schoolIcon = new L.Icon({
-      iconUrl: "/map-pins/map-pin-kids.svg",
-      iconAnchor:   [12, 34],
-      iconSize: [24, 34],
+  const defaultIcon = new L.Icon({
+        iconUrl: "/map-pins/map-pin-basic.svg",
+        iconAnchor:   [12, 34],
+        iconSize: [24, 34],
+    }),
+    schoolIcon = new L.Icon({
+        iconUrl: "/map-pins/map-pin-kids.svg",
+        iconAnchor:   [12, 34],
+        iconSize: [24, 34],
+    }),
+    collectiveIcon = new L.Icon({
+        iconUrl: "/map-pins/map-pin-collectif.svg",
+        iconAnchor:   [12, 34],
+        iconSize: [24, 34],
     })
 ;
 
 let loctype = {
     Ecole: schoolIcon,
     OffreImmo: defaultIcon,
-    HabitatPartage: defaultIcon
+    HabitatPartage: defaultIcon,
+    Collective: collectiveIcon,
 }
 
-let interest : {position: [lat: number, long: number]
+let interests : {position: [lat: number, long: number]
                 url?: string,
                 label: string,
-                type?: L.Icon
+                type?: L.Icon,
+                immobilier?: [{
+                    label: string,
+                    url: string,
+                    prix: number
+                }]
                 }[] = 
 [
+    { 
+        position: [45.0494857,0.1121384],
+        label: "Ferme l'odeur de la pluie",
+        url: "https://lodeurdelapluie.fr",
+        type: loctype.Collective,
+        immobilier: [
+            {
+                label: "Maison 6 pièces 252 m²",
+                prix: 93500,
+                url: "https://www.leboncoin.fr/ventes_immobilieres/2220319286.htm"
+            }
+        ]
+    },
     { 
         position: [48.7464092,1.0472644],
         label: "Ecole les roseaux de Verneuil",
@@ -53,7 +81,8 @@ let interest : {position: [lat: number, long: number]
     },
     {
         position: [48.6994924,-3.1194224],
-        label: "le village vegan"
+        label: "le village vegan",
+        type: loctype.Collective
 
     },
     {
@@ -73,6 +102,15 @@ let interest : {position: [lat: number, long: number]
         label   : "Enfants sous les Pins",
         type    : loctype.Ecole,
         url     : "http://enfantssouslespins.com/"
+    },
+    {
+        position: [48.3265023,-3.7932969],
+        label: "Tremargat",
+        type: loctype.Collective
+    },
+    {
+        position: [49.28, -0.200652],
+        label: "Merville/Francefille.",
     }
     
 ] 
@@ -95,26 +133,23 @@ export const Map: React.FC = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {interest.map((interest, index) => {
+            {interests.map((interest, index) => {
                 return <Marker key={index} position={interest.position} icon={interest.type ? interest.type : defaultIcon}>
                         <Popup>
-                            {interest.url 
-                                ? <a href={interest.url} target="_new">{interest.label}</a> 
-                                : <span>{interest.label}</span>
-                            }
+                            <div>
+                                {interest.url 
+                                    ? <a href={interest.url} target="_new">{interest.label}</a> 
+                                    : <span>{interest.label}</span>
+                                }
+                            </div>
+                            {interest.immobilier?.map((immobilier,index) => {
+                                return <div key={index}>
+                                    <a href={immobilier.url}>{immobilier.label}</a> / {immobilier.prix} €
+                                </div>
+                            })}
                         </Popup>
                     </Marker>
             })}
-            <Marker position={[49.28, -0.200652]}>
-                <Popup>
-                Merville/Francefille.
-                </Popup>
-            </Marker>
-            <Marker position={[48.3265023,-3.7932969]}>
-            <Popup>
-                Tremargat
-            </Popup>
-            </Marker>
         </MapContainer>
 
     );
