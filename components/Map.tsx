@@ -92,9 +92,21 @@ let interests : {position: [lat: number, long: number]
         type    : loctype.Ecole
     },
     {
+        position: [48.0470674,-1.4961974],
+        url: "https://www.grainesdejoie.fr/",
+        label: "Graines de Joie",
+        type    : loctype.Ecole
+    },
+    {
         position: [47.91039,-1.826753],
         url: "https://ecolenoesis.org/",
         label: "Ecole Noesis",
+        type    : loctype.Ecole
+    },
+    {
+        position: [48.6605113,2.6708979],
+        label: "Nova School",
+        url: "https://www.ecolealternative77.com/",
         type    : loctype.Ecole
     },
     {

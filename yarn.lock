@@ -1038,6 +1038,11 @@ google-p12-pem@^3.1.3:
   dependencies:
     node-forge "^1.3.1"
 
+google-sheets-mapper@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/google-sheets-mapper/-/google-sheets-mapper-2.0.0.tgz#6ca641de128e59834d15f33838038d5e00c418ec"
+  integrity sha512-v5PH/VOOYStUvg93SidjfEteGtl6uqqNep9WkmfFHuGKsEbenW94Pufg/pz0tI1F8ssTxGZwgDrNsucr9tnfeQ==
+
 google-spreadsheet@^3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/google-spreadsheet/-/google-spreadsheet-3.3.0.tgz#725aecf9ea67ff8b8c45ddaf714f78f3e99db6a1"
@@ -1913,6 +1918,13 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
+
+use-google-sheets@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/use-google-sheets/-/use-google-sheets-2.0.0.tgz#dd6d1ad755f111fcc4878b4bda31a217b18b7fc4"
+  integrity sha512-CbMgwqK8MIorrKIjkSijnWPI0FTcJhQqV8g8ujX2cb68CtSYKmBG52oUyLBPYXRXDVLmcRWyqabmepOZXN+HSA==
+  dependencies:
+    google-sheets-mapper "^2.0.0"
 
 v8-compile-cache@^2.0.3:
   version "2.3.0"
