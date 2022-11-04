@@ -38,6 +38,8 @@ const MyAwesomeMap = dynamic(() => import("../components/Map"), { ssr:false });
 const Home: NextPage = () => {
   const googleButton = useRef(null);
   useEffect(() => {
+    
+    var google:any;
     const src = 'https://accounts.google.com/gsi/client'
     const id = "657764290407-71f2h1ri3k173p5tnr4ja19rhgage90s.apps.googleusercontent.com"
     loadScript(src)
