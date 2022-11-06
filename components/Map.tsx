@@ -123,6 +123,10 @@ let interests : {position: [lat: number, long: number]
     {
         position: [49.28, -0.200652],
         label: "Merville/Francefille.",
+    },
+    {
+        position: [43.9285776,4.8816622],
+        label: "Montfavet"
     }
     
 ] 

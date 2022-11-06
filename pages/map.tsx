@@ -1,24 +1,21 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Image from 'next/image'
+// import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
-import { useEffect, useRef } from 'react';
-import { useState } from 'react';
+// import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+// import { useEffect, useRef } from 'react';
+// import { useState } from 'react';
 import useGoogleSheets from 'use-google-sheets';
+//import { GoogleLogin } from '@react-oauth/google';
+//import { useGoogleLogin } from '@react-oauth/google';
+const { useGoogleLogin } = require('@react-oauth/google');
+// import axios from "axios";
+//const { GoogleSpreadsheet } = require('google-spreadsheet');
 
 import dynamic from "next/dynamic";
 
-
-const loadScript = (src:string) =>
-  new Promise((resolve:Function, reject) => {
-    if (document.querySelector(`script[src="${src}"]`)) return resolve()
-    const script = document.createElement('script')
-    script.src = src
-    script.onload = () => resolve()
-    script.onerror = (err) => reject(err)
-    document.body.appendChild(script)
-  })
+const sheet_id = "1gd4w1x8qWrIxgb0_NuHqrOV4TeiluY5jzMnSSg2JmMo";
+const client_id = "657764290407-71f2h1ri3k173p5tnr4ja19rhgage90s.apps.googleusercontent.com";
 
 const MyAwesomeMap = dynamic(() => import("../components/Map"), { ssr:false });
 
@@ -36,37 +33,50 @@ const MyAwesomeMap = dynamic(() => import("../components/Map"), { ssr:false });
     </MapContainer>
  */
 const Home: NextPage = () => {
-  const googleButton = useRef(null);
-  useEffect(() => {
-    
-    var google:any;
-    const src = 'https://accounts.google.com/gsi/client'
-    const id = "657764290407-71f2h1ri3k173p5tnr4ja19rhgage90s.apps.googleusercontent.com"
-    loadScript(src)
-      .then(() => {
-        /*global google*/
-        console.log(google)
-        google.accounts.id.initialize({
-          client_id: id,
-          callback: handleCredentialResponse,
-        })
-        google.accounts.id.renderButton(
-          googleButton.current, 
-          { theme: 'outline', size: 'large' } 
-        )
+  // const oauthClient = new OAuth2Client({
+  //   clientId: client_id
+  // });
+  // oauthClient.on('tokens', credentials => {
+  //   console.log(credentials.access_token);
+  //   console.log(credentials.scope);
+  //   console.log(credentials.expiry_date);
+  //   console.log(credentials.token_type); // will always be 'Bearer'
+  // })
+  const onSuccessHandler = (tokenResponse:any) => {
+    console.log(tokenResponse);
+    let accessToken = tokenResponse.access_token;
+    fetch("https://sheets.googleapis.com/v4/spreadsheets/" + sheet_id, {
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+       }
+    }).then((response) => {
+      fetch("https://sheets.googleapis.com/v4/spreadsheets/" + sheet_id + "/values/Ecoles", {
+        headers: {
+          'Authorization': 'Bearer ' + accessToken,
+        }
+      }).then((response) => {
+        let data = response.json();
       })
-      .catch(console.error)
-
-    return () => {
-      const scriptTag = document.querySelector(`script[src="${src}"]`)
-      if (scriptTag) document.body.removeChild(scriptTag)
-    }
-  }, [])
-
-  function handleCredentialResponse(response:any) {
-    console.log("Encoded JWT ID token: " + response.credential);
+    })
+    
+    // const doc = new GoogleSpreadsheet(sheet_id);
+    // doc.useRawAccessToken(accessToken);
+    // doc.loadInfo();
+    // console.log(doc.sheetsByTitle["Ecole"].getRows());
+    
   }
-
+  // const login = () => {
+  //   window.open(oauthClient.generateAuthUrl({
+  //     client_id: client_id,
+  //     scope: "https://www.googleapis.com/auth/spreadsheets.readonly"
+  //   }), "google_auth", "status=no,titlebar=no,toolbar=no")
+  // }
+  const login = useGoogleLogin({
+    onSuccess: onSuccessHandler,
+    scope: "https://www.googleapis.com/auth/spreadsheets.readonly"
+  });
+  
+  
   return (
     <div>
       <Head>
@@ -77,7 +87,10 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <MyAwesomeMap/>
-        <div ref={googleButton}></div>
+        <button onClick={() => login()}>
+          Sign in with Google 🚀{' '}
+        </button>;
+      
       </main>
 
       <footer className={styles.footer}>
