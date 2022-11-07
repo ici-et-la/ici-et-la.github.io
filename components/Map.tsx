@@ -81,7 +81,6 @@ export const Map: React.FC<MapProps> = (props: MapProps) => {
               response.json().then((sheet: any) => {
                 console.log(sheet);
                 let attributes = sheet.values[0];
-                console.log(sheet.values.slice(1));
                 let data = sheet.values.slice(1).map((row: Array<string>) => {
                     var result: any = { }; //{[k: string]: any} = {};
                     attributes.forEach((key: string, index: number) => {
@@ -89,23 +88,22 @@ export const Map: React.FC<MapProps> = (props: MapProps) => {
                     });
                     return result;
                 });
-                console.log(data);
                 setMarkers(data.map((interest: any, index: number) => {
                     try {
-                    let position = [parseFloat(interest.Latitude), parseFloat(interest.Longitude)];
-                    if ( !(position[0] || position[1]) ) { return <></> }
-                    let icon = loctype[interest.Type] ? loctype[interest.Type] : defaultIcon;
-                    return <Marker key={index} position={[position[0],position[1]]} icon={icon}>
-                        <Popup>
-                            <div>
-                                {interest.URL 
-                                    ? <a href={interest.URL} target="_new">{interest.Nom}</a> 
-                                    : <span>{interest.Description}</span>
-                                }
-                            </div>
-                        </Popup>
-                    </Marker>
-
+                        let position = [parseFloat(interest.Latitude), parseFloat(interest.Longitude)];
+                        if ( !(position[0] || position[1]) ) { return <></> }
+                        let icon = loctype[interest.Type] ? loctype[interest.Type] : defaultIcon;
+                        return <Marker key={index} position={[position[0],position[1]]} icon={icon}>
+                            <Popup>
+                                <div>
+                                    {interest.URL 
+                                        ? <a href={interest.URL} target="_new">{interest.Nom}</a> 
+                                        : <span>{interest.Nom}</span>
+                                    }
+                                </div>
+                                <div>{interest.Description}</div>
+                            </Popup>
+                        </Marker>
                     } catch (e) {
                         return <></>
                     }
@@ -113,7 +111,6 @@ export const Map: React.FC<MapProps> = (props: MapProps) => {
             });
           })
         })
-
     }, [])
     
     return (
@@ -141,7 +138,6 @@ export const Map: React.FC<MapProps> = (props: MapProps) => {
                     </Marker>
             })}
         </MapContainer>
-
     );
 }
 
