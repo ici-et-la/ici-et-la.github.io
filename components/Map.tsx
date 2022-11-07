@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 */
 
 import * as L from "leaflet";
+import { useState } from "react";
 
 
   const defaultIcon = new L.Icon({
@@ -24,11 +25,12 @@ import * as L from "leaflet";
     })
 ;
 
-let loctype = {
-    Ecole: schoolIcon,
-    OffreImmo: defaultIcon,
-    HabitatPartage: defaultIcon,
-    Collective: collectiveIcon,
+let loctype: {[k: string]: any} = {
+    "Ecole": schoolIcon,
+    "OffreImmo": defaultIcon,
+    "HabitatPartage": defaultIcon,
+    "Collective": collectiveIcon,
+    "Ecolieu": collectiveIcon
 }
 
 let interests : {position: [lat: number, long: number]
@@ -54,101 +56,73 @@ let interests : {position: [lat: number, long: number]
                 url: "https://www.leboncoin.fr/ventes_immobilieres/2220319286.htm"
             }
         ]
-    },
-    { 
-        position: [48.7464092,1.0472644],
-        label: "Ecole les roseaux de Verneuil",
-        url: "https://ecoleroseauxverneuil.com/",
-        type: loctype.Ecole
-    },
-    {
-        position: [42.8833185,2.1382861],
-        url     : "https://grainesdevie.info/",
-        label   : "Graines de vie",
-        type    : loctype.Ecole
-    },
-    {
-        position: [46.3240607,0.28274],
-        url     : "https://lejardinagrandir.jimdofree.com/",
-        label   : "Le Jardinagrandir",
-        type    : loctype.Ecole
-    },
-    {
-        position: [45.5942617,4.5387813],
-        url     : "https://lesvoiesdelaforet.fr/",
-        label   : "Les voies de la forêt",
-        type    : loctype.Ecole
-    },
-    {
-        position: [48.6994924,-3.1194224],
-        label: "le village vegan",
-        type: loctype.Collective
-
-    },
-    {
-        position: [48.1300553,-2.1535194],
-        url: "https://www.bretagne-grainedesens.bzh/",
-        label: "Graines de Sens",
-        type    : loctype.Ecole
-    },
-    {
-        position: [48.0470674,-1.4961974],
-        url: "https://www.grainesdejoie.fr/",
-        label: "Graines de Joie",
-        type    : loctype.Ecole
-    },
-    {
-        position: [47.91039,-1.826753],
-        url: "https://ecolenoesis.org/",
-        label: "Ecole Noesis",
-        type    : loctype.Ecole
-    },
-    {
-        position: [48.6605113,2.6708979],
-        label: "Nova School",
-        url: "https://www.ecolealternative77.com/",
-        type    : loctype.Ecole
-    },
-    {
-        position: [43.5965115,-1.3488512],
-        label   : "Enfants sous les Pins",
-        type    : loctype.Ecole,
-        url     : "http://enfantssouslespins.com/"
-    },
-    {
-        position: [48.3265023,-3.7932969],
-        label: "Tremargat",
-        type: loctype.Collective
-    },
-    {
-        position: [49.28, -0.200652],
-        label: "Merville/Francefille.",
-    },
-    {
-        position: [43.9285776,4.8816622],
-        label: "Montfavet"
     }
-    
 ] 
- 
 
+interface MapProps {
+    tokenResponse: any,
+    sheet_id: string
+}
 
-export const Map: React.FC = () => {
-/*    useEffect(() => {
-        function showInfo(data, tabletop) {
-            // do something with the data
-            console.log(JSON.stringify(data, null, 2));
-          }
-        Tabletop.init( { key: publicSpreadsheetUrl,
-            callback: showInfo,
-            simpleSheet: false } )
-    },[]); */
+export const Map: React.FC<MapProps> = (props: MapProps) => {
+    const [markers,setMarkers] = useState(<></>);
+    useEffect(() => {
+        let accessToken = props.tokenResponse.access_token;
+        fetch("https://sheets.googleapis.com/v4/spreadsheets/" + props.sheet_id, {
+          headers: {
+            'Authorization': 'Bearer ' + accessToken,
+           }
+        }).then((response) => {
+          fetch("https://sheets.googleapis.com/v4/spreadsheets/" + props.sheet_id + "/values/Lieux", {
+            headers: {
+              'Authorization': 'Bearer ' + accessToken,
+            }
+          }).then((response) => {
+              response.json().then((sheet: any) => {
+                console.log(sheet);
+                let attributes = sheet.values[0];
+                console.log(sheet.values.slice(1));
+                let data = sheet.values.slice(1).map((row: Array<string>) => {
+                    var result: any = { }; //{[k: string]: any} = {};
+                    attributes.forEach((key: string, index: number) => {
+                        result[key] = row[index];   
+                    });
+                    return result;
+                });
+                console.log(data);
+                setMarkers(data.map((interest: any, index: number) => {
+                    try {
+                    let position = [parseFloat(interest.Latitude), parseFloat(interest.Longitude)];
+                    if ( !(position[0] || position[1]) ) { return <></> }
+                    let icon = loctype[interest.Type] ? loctype[interest.Type] : defaultIcon;
+                    return <Marker key={index} position={[position[0],position[1]]} icon={icon}>
+                        <Popup>
+                            <div>
+                                {interest.URL 
+                                    ? <a href={interest.URL} target="_new">{interest.Nom}</a> 
+                                    : <span>{interest.Description}</span>
+                                }
+                            </div>
+                        </Popup>
+                    </Marker>
+
+                    } catch (e) {
+                        return <></>
+                    }
+                }))
+            });
+          })
+        })
+
+    }, [])
+    
     return (
         <MapContainer style={{width: "1400px",height:'800px'}} center={[45.805, -1.49]} zoom={6} scrollWheelZoom={true}>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+            {markers}
             {interests.map((interest, index) => {
                 return <Marker key={index} position={interest.position} icon={interest.type ? interest.type : defaultIcon}>
                         <Popup>
