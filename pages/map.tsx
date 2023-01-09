@@ -14,7 +14,7 @@ const { useGoogleLogin } = require('@react-oauth/google');
 const sheet_id = "1gd4w1x8qWrIxgb0_NuHqrOV4TeiluY5jzMnSSg2JmMo";
 const client_id = "657764290407-71f2h1ri3k173p5tnr4ja19rhgage90s.apps.googleusercontent.com";
 
-const MyAwesomeMap = dynamic(() => import("../components/Map"), { ssr:false });
+const MyAwesomeMap = dynamic(() => import("../components/MapFromSheets"), { ssr:false });
 
 
 const Home: NextPage = () => {
