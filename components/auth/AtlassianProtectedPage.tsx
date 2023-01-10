@@ -18,7 +18,7 @@ interface ProtectedPageProps {
     children: any
 }
 
-export const JiraProtectedPage: React.FC<ProtectedPageProps> = (props: ProtectedPageProps) => {
+export const AtlassianProtectedPage: React.FC<ProtectedPageProps> = (props: ProtectedPageProps) => {
     
     const [jiraConfigJson, setJiraConfigJson] = useSsrLocalStorage("jiraConfigJson","");
     const [pageContent, setPageContent] = useState(<></>);
@@ -154,10 +154,10 @@ export const JiraProtectedPage: React.FC<ProtectedPageProps> = (props: Protected
                 setPageContent(<>{props.children}</>)
             })
         })
-    }, []);
+    }, [getGoogleToken, getJIRAToken, props.children]);
     return(<>
         {pageContent}
     </>)
 }
 
-export default JiraProtectedPage
+export default AtlassianProtectedPage

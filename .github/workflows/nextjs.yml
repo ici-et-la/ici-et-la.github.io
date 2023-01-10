@@ -47,6 +47,13 @@ jobs:
             echo "Unable to determine packager manager"
             exit 1
           fi
+          cat > /public/settings.json << EOF
+          {
+              "sheetId": "1gd4w1x8qWrIxgb0_NuHqrOV4TeiluY5jzMnSSg2JmMo",
+              "clientId": "657764290407-71f2h1ri3k173p5tnr4ja19rhgage90s.apps.googleusercontent.com",
+              "settingsTabName": "prod.settings"
+          }
+          EOF
       - name: Setup Node
         uses: actions/setup-node@v3
         with:

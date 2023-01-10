@@ -118,7 +118,7 @@ export const MapFromSheets: React.FC<MapProps> = (props: MapProps) => {
             });
           })
         })
-    }, [])
+    }, [props.sheet_id,props.tokenResponse.access_token])
     
     return (
         <MapContainer style={{width: "1400px",height:'800px'}} center={[45.805, -1.49]} zoom={6} scrollWheelZoom={true}>

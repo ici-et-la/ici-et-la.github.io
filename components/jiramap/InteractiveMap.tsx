@@ -73,7 +73,7 @@ export const InteractiveMap: FC = () => {
             })
         })
         //setMap(<MyAwesomeMap></MyAwesomeMap>)
-     }, []);
+     }, [jiraConfigJson,jiraTokenResponse]);
       return (
         <>
         <MapNav></MapNav>

@@ -46,7 +46,7 @@ export const Map: FC<MapProps> = (props: MapProps) => {
         );
         setMarkers(<>{allMarkers}</>);
 
-    }, [])
+    }, [props.locations])
     return(<>
     <MapContainer style={{width: "1400px",height:'800px'}} center={[45.805, -1.49]} zoom={6} scrollWheelZoom={true}>
             <TileLayer
