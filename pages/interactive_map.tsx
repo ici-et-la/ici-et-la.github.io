@@ -7,7 +7,7 @@ const client_id = "657764290407-71f2h1ri3k173p5tnr4ja19rhgage90s.apps.googleuser
 const settings_name = "dev.settings"
 
 
-const InteractiveMap = dynamic(() => import("../components/InteractiveMap"), { ssr:false });
+const InteractiveMap = dynamic(() => import("../components/jiramap/InteractiveMap"), { ssr:false });
 
 
     

@@ -1,9 +1,12 @@
 import { FC, useEffect, useState } from "react";
 
-import Map from "./Map";
+import Map from "../Map";
 
-import { loctype, MapLocation } from "../lib/Location";
+import { loctype, MapLocation } from "../../lib/Location";
 
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import MapNav from "./MapNav";
 
 const useSsrLocalStorage = (key: string, initial: string): [string, React.Dispatch<string>] => {
     if (typeof window === 'undefined') {
@@ -44,6 +47,7 @@ export const InteractiveMap: FC = () => {
                             try {
                                 const location: MapLocation = {
                                     label: issue.fields.summary,
+                                    url: issue.fields.customfield_10035,
                                     type: loctype.hasOwnProperty(issue.fields.issuetype.name) ? loctype[issue.fields.issuetype.name] : loctype["Localisation"],
                                     position: [parseFloat(issue.fields.customfield_10039),parseFloat(issue.fields.customfield_10040)]
                                 };
@@ -72,7 +76,7 @@ export const InteractiveMap: FC = () => {
      }, []);
       return (
         <>
-        
+        <MapNav></MapNav>
         {mapContent}
         </>
       )
