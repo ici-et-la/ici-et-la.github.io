@@ -13,8 +13,8 @@ const useSsrLocalStorage = (key: string, initial: string): [string, React.Dispat
 
 
 interface ProtectedPageProps {
-    google_sheet_id: string,
-    settings_tab_name: string,
+    google_sheet_id?: string,
+    settings_tab_name?: string,
     children: any
 }
 
