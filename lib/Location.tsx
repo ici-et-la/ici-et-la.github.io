@@ -25,9 +25,14 @@ let loctype: {[k: string]: any} = {
 }
 
 export interface MapLocation {
-    position: [lat: number, long: number]
+    onSelectHandler?: Function,
+    id?: string,
+    position?: [lat: number, long: number]
     url?: string,
+    status?: string,
+    maps_url?: string,
     label: string,
+    description?: string,
     type?: L.Icon,
     immobilier?: [{
         label: string,

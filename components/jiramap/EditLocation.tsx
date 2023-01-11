@@ -4,30 +4,24 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { JiraHelper } from "../../lib/jira_helper";
-import { copyFileSync } from "fs";
 import { MapLocation } from "../../lib/Location";
 
-const useSsrLocalStorage = (key: string, initial: string): [string, React.Dispatch<string>] => {
-    if (typeof window === 'undefined') {
-        return [initial, (value: string) => undefined ]
-    } else {
-        return require("react-use-localstorage").default(key, initial);
-    }
-}
 
 interface EditLocationProps {
     handleClose: MouseEventHandler
+    jiraHelper: JiraHelper
+    location?: MapLocation
+    title: String
 }
 
 export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => {
-    
-    const [jiraTokenResponse, setJIRATokenResponse] = useSsrLocalStorage("jiraTokenResponse","");
-    const [jiraConfigJson, setJiraConfigJson] = useSsrLocalStorage("jiraConfigJson","");
-    var helper:JiraHelper;
-    const [nameFieldValue, setNameFieldValue] = useState("");
-    const [urlFieldValue, setUrlFieldValue] = useState("");
-    const [mapsUrlFieldValue, setMapsUrlFieldValue] = useState("");
-    
+    // if (!props.jiraHelper) return <><h4>Missing component configuration</h4></>;
+    const locationId = props.location?.id ? props.location?.id : undefined;
+    const [nameFieldValue, setNameFieldValue] = useState(props.location?.label ? props.location?.label : "");
+    const [urlFieldValue, setUrlFieldValue] = useState(props.location?.url ? props.location?.url : "");
+    const [mapsUrlFieldValue, setMapsUrlFieldValue] = useState(props.location?.maps_url ? props.location?.maps_url : "");
+    const [statusValue, setStatus] = useState(props.location?.status ? props.location?.status : "");
+    const [descriptionValue, setDescription] = useState(props.location?.description ? props.location?.description : "");
     const handleNameChange = (event:any) => {
         setNameFieldValue(event.target.value)
     }
@@ -38,24 +32,32 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
     const handleMapsUrlChange = (event:any) => {
         setMapsUrlFieldValue(event.target.value)
     }
-
+    const handleDescriptionChange = (event:any) => {
+      setDescription(event.target.value)
+  }
     const handleSave: MouseEventHandler = (mouseEvent) => {
         console.log(nameFieldValue)
-        // const location: MapLocation = {
-        //     label: nameFieldValue,
-        //     url: urlFieldValue,
-        // }
-        helper.createIssue(nameFieldValue, urlFieldValue ,mapsUrlFieldValue);
-        props.handleClose(mouseEvent)
+        const newLocationValues: MapLocation = {
+          id: locationId,
+          label: nameFieldValue,
+          url: urlFieldValue,
+          maps_url: mapsUrlFieldValue,
+          description: descriptionValue
+        }
+        if (!locationId) { // No ID ==> new issue
+          return props.jiraHelper?.createIssue(nameFieldValue, urlFieldValue ,mapsUrlFieldValue).then(() => {
+            props.handleClose(mouseEvent)
+          });
+        }
+        return props.jiraHelper?.updateLocation(newLocationValues).then(() => {
+          props.handleClose(mouseEvent)
+        });
     }
-    const jira_token = JSON.parse(jiraTokenResponse);
-    const jiraConfig = JSON.parse(jiraConfigJson)
-    helper = new JiraHelper(jiraConfig,jira_token)
     useEffect(() => {
     }, [])
     return <>
         <Modal.Header closeButton>
-        <Modal.Title>Create location</Modal.Title>
+        <Modal.Title>{props.title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
       <Form>
@@ -79,6 +81,10 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
         <Form.Text className="text-muted">
           Name of the place.
         </Form.Text>
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Description</Form.Label>
+        <Form.Control as="textarea" onChange={handleDescriptionChange} rows={3} value={descriptionValue}/>
       </Form.Group>
     </Form>
 

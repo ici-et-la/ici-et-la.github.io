@@ -26,7 +26,7 @@ export const AtlassianProtectedPage: React.FC<ProtectedPageProps> = (props: Prot
     // Timestamp of the response
     const [jiraTokenResponseTime, setJIRATokenResponseTime] = useSsrLocalStorage("jiraTokenResponseTime","");
     const [jiraState, setJiraState] = useSsrLocalStorage("jiraState","");
-    
+    const [isRendered,setRendered] = useState(false);
     const getJIRAAuthConfigInGoogleSheets = (googleAuthToken:any, callback: Function) => {
         
         fetch("https://sheets.googleapis.com/v4/spreadsheets/" + props.google_sheet_id, {
@@ -67,7 +67,7 @@ export const AtlassianProtectedPage: React.FC<ProtectedPageProps> = (props: Prot
         let jiraToken:any = null;
         try {
             jiraToken = JSON.parse(jiraTokenResponse);
-            console.log(jiraToken);
+            //console.log(jiraToken);
             const token_time = new Date(jiraTokenResponseTime);
             
             if (new Date() < addSeconds(token_time, jiraToken.expires_in)) { 
@@ -148,13 +148,16 @@ export const AtlassianProtectedPage: React.FC<ProtectedPageProps> = (props: Prot
     }
     useEffect(() => {
         
-        getGoogleToken((google_token:any) => {
-            getJIRAToken(google_token, (token: any) => {
-                console.log(token);
-                setPageContent(<>{props.children}</>)
+        if (!isRendered) {
+            setRendered(true)
+            getGoogleToken((google_token:any) => {
+                setRendered(true)
+                getJIRAToken(google_token, (token: any) => {
+                    setPageContent(<>{props.children}</>)
+                })
             })
-        })
-    }, [getGoogleToken, getJIRAToken, props.children]);
+        }
+    }, [getGoogleToken, getJIRAToken, props.children, isRendered, setRendered]);
     return(<>
         {pageContent}
     </>)

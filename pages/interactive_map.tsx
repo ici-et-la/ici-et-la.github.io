@@ -3,8 +3,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { AtlassianProtectedPage } from "../components/auth/AtlassianProtectedPage"
 
-
-const InteractiveMap = dynamic(() => import("../components/jiramap/InteractiveMap"), { ssr:false });
+const InteractiveMap = dynamic(() => import("../components/jiramap/interactiveMap/InteractiveMap"), { ssr:false });
 
 
 
