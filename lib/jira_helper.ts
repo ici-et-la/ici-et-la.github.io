@@ -35,21 +35,35 @@ export class JiraHelper {
             }).catch(reject)
         })
     }
-    public mapIssuesToLocations(issues:any) {
-        return issues.map((issue: any,index: number) => {
-            const location: MapLocation = {
-                id: issue.key,
-                label: issue.fields.summary,
-                status: issue.fields.status.name,
-                maps_url: issue.fields.customfield_10038, 
-                description: issue.fields.description?.content[0]?.content[0]?.text,
-                url: issue.fields.customfield_10035,
-                type: loctype.hasOwnProperty(issue.fields.issuetype.name) ? loctype[issue.fields.issuetype.name] : loctype["Localisation"],
-                position: [parseFloat(issue.fields.customfield_10039),parseFloat(issue.fields.customfield_10040)]
-            };
+    public mapIssueToLocation(issue: any,index?: number) {
+        const location: MapLocation = {
+            id: issue.key,
+            label: issue.fields.summary,
+            status: issue.fields.status.name,
+            maps_url: issue.fields.customfield_10038, 
+            description: issue.fields.description?.content[0]?.content[0]?.text,
+            url: issue.fields.customfield_10035,
+            issuetype: issue.fields.issuetype.name,
+            type: loctype.hasOwnProperty(issue.fields.issuetype.name) ? loctype[issue.fields.issuetype.name] : loctype["Localisation"],
+            position: [parseFloat(issue.fields.customfield_10039),parseFloat(issue.fields.customfield_10040)]
+        };
 
-            return location;
-        })
+        return location;
+    }
+    public mapIssuesToLocations(issues:any) {
+        return issues.map(this.mapIssueToLocation)
+    }
+    public getLocation(id: string) {
+        return new Promise((resolve, reject) => {
+            const fetch_options: RequestInit = this.fetchOptions();
+            const url = this.apiUrl + "/issue/" + id
+            fetch(url, fetch_options).then((response) => {
+                response.json().then((result) => {
+                    resolve(this.mapIssueToLocation(result))
+                }).catch(reject)
+            })
+        });
+
     }
     public updateLocation(newLocationValues: MapLocation) {
         return new Promise((resolve, reject) => {
@@ -60,7 +74,7 @@ export class JiraHelper {
                 fields: {
                     "summary": newLocationValues.label,
                     "customfield_10035": newLocationValues.url,
-                    "customfield_10038": newLocationValues.maps_url,
+                    "customfield_10038": newLocationValues.maps_url?.substring(0,254),
                     "description": {
                         "type": "doc",
                         "version": 1,
@@ -91,19 +105,22 @@ export class JiraHelper {
         })
     }
     // public getLocations() {}
-    public createIssue(name: string, url: string,google_maps_url: string) {
+    public createIssue(name: string, url: string,google_maps_url: string, issuetype?: string) {
         return new Promise((resolve, reject) => {
             const fetch_options: RequestInit = this.fetchOptions();
             const create_url = this.apiUrl + "/issue"
+            if (!issuetype) {
+                issuetype = "Localisation"
+            }
             fetch_options.method = "POST"
             const issue_data = {
                 update: {},
                 fields: {
                     "summary": name,
                     "customfield_10035": url,
-                    "customfield_10038": google_maps_url,
+                    "customfield_10038": google_maps_url.substring(0,254),
                     "issuetype": {
-                        "id": "10009"
+                        "name": issuetype
                     },
                     "project": {
                         "id": "10001"

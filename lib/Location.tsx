@@ -30,6 +30,7 @@ export interface MapLocation {
     position?: [lat: number, long: number]
     url?: string,
     status?: string,
+    issuetype?: string,
     maps_url?: string,
     label: string,
     description?: string,

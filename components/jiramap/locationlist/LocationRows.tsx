@@ -5,6 +5,7 @@ import * as Icon from "react-bootstrap-icons"
 import EditLocation from "../EditLocation"
 import { JiraHelper } from "../../../lib/jira_helper"
 import MapModal from "../interactiveMap/MapModal"
+import { MapInterface } from "../interactiveMap/InteractiveMap"
 interface LocationRowsProps {
     locations?: Array<MapLocation>
     columns: Array<String>
@@ -12,6 +13,7 @@ interface LocationRowsProps {
     actions?: Array<String>
     jiraHelper?: JiraHelper
     modal?: MapModal
+    map: MapInterface
 }
 
 export const LocationRows: FC<LocationRowsProps> = (props:LocationRowsProps) => {
@@ -30,7 +32,7 @@ export const LocationRows: FC<LocationRowsProps> = (props:LocationRowsProps) => 
     const getHandleShowEdit = (location: MapLocation) => {
         return () => {
           modal.setModalContent(<>
-            <EditLocation title="Edit location" location={location} jiraHelper={helper} handleClose={handleCloseModal}></EditLocation>
+            <EditLocation map={props.map} title="Edit location" location={location} jiraHelper={helper} handleClose={handleCloseModal}></EditLocation>
           </>)
           modal.setShowModal(true);
         }

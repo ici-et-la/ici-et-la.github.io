@@ -9,6 +9,7 @@ import * as L from "leaflet";
 import InteractiveMarker from "./InteractiveMarker";
 import MapModal from "./MapModal";
 import { JiraHelper } from "../../../lib/jira_helper";
+import { MapInterface } from "./InteractiveMap";
 
 
 
@@ -16,7 +17,8 @@ interface MapProps {
     locations?: Array<MapLocation>,
     selected?: MapLocation,
     modal: MapModal,
-    jiraHelper?: JiraHelper
+    jiraHelper?: JiraHelper,
+    map: MapInterface
 }
 
 export const JiraMap: FC<MapProps> = (props: MapProps) => {
@@ -35,7 +37,7 @@ export const JiraMap: FC<MapProps> = (props: MapProps) => {
                 try {
                     if ( location.position && !(location.position[0] || location.position[1] )) { return null }
                     
-                    return <InteractiveMarker jiraHelper={helper} modal={props.modal} key={index} location={location} selected={selected}></InteractiveMarker>
+                    return <InteractiveMarker map={props.map} jiraHelper={helper} modal={props.modal} key={index} location={location} selected={selected}></InteractiveMarker>
                 } catch (e) {
                     console.error(e)
                     return null

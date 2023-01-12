@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import { JiraHelper } from "../../../lib/jira_helper";
 import { MapLocation } from "../../../lib/Location";
+import { MapInterface } from "../interactiveMap/InteractiveMap";
 import LocationRows from "./LocationRows";
 
 
@@ -10,6 +11,7 @@ interface LocationTableProps {
     columns?: Array<String>
     selected?: MapLocation
     jiraHelper: JiraHelper
+    map: MapInterface
 }
 
 export const LocationTable: FC<LocationTableProps> = (props: LocationTableProps) => {
@@ -24,7 +26,7 @@ export const LocationTable: FC<LocationTableProps> = (props: LocationTableProps)
                 </tr>
             </thead>
             <tbody>
-                <LocationRows jiraHelper={props.jiraHelper} columns={columns} locations={props.locations}></LocationRows>
+                <LocationRows map={props.map} jiraHelper={props.jiraHelper} columns={columns} locations={props.locations}></LocationRows>
             </tbody> 
         </Table>
     </>

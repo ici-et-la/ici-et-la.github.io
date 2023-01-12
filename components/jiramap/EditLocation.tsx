@@ -5,13 +5,15 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { JiraHelper } from "../../lib/jira_helper";
 import { MapLocation } from "../../lib/Location";
+import { MapInterface } from "./interactiveMap/InteractiveMap";
 
 
 interface EditLocationProps {
     handleClose: MouseEventHandler
     jiraHelper: JiraHelper
     location?: MapLocation
-    title: String
+    title: String,
+    map: MapInterface
 }
 
 export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => {
@@ -19,9 +21,12 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
     const locationId = props.location?.id ? props.location?.id : undefined;
     const [nameFieldValue, setNameFieldValue] = useState(props.location?.label ? props.location?.label : "");
     const [urlFieldValue, setUrlFieldValue] = useState(props.location?.url ? props.location?.url : "");
-    const [mapsUrlFieldValue, setMapsUrlFieldValue] = useState(props.location?.maps_url ? props.location?.maps_url : "");
+    const [mapsUrlFieldValue, setMapsUrlFieldValue] = useState(props.location?.maps_url ? props.location?.maps_url :"");
+    const [locationType, setLocationType] = useState(props.location?.issuetype ? props.location?.issuetype : "Ecole");
+    
     const [statusValue, setStatus] = useState(props.location?.status ? props.location?.status : "");
     const [descriptionValue, setDescription] = useState(props.location?.description ? props.location?.description : "");
+    const [errorMessage, setErrorMessage] = useState("")
     const handleNameChange = (event:any) => {
         setNameFieldValue(event.target.value)
     }
@@ -34,8 +39,11 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
     }
     const handleDescriptionChange = (event:any) => {
       setDescription(event.target.value)
-  }
-    const handleSave: MouseEventHandler = (mouseEvent) => {
+    }
+    const handleSelectType = (event: any) => {
+      setLocationType(event.target.value)
+    }
+    const handleSave: MouseEventHandler = async (mouseEvent) => {
         console.log(nameFieldValue)
         const newLocationValues: MapLocation = {
           id: locationId,
@@ -45,13 +53,22 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
           description: descriptionValue
         }
         if (!locationId) { // No ID ==> new issue
-          return props.jiraHelper?.createIssue(nameFieldValue, urlFieldValue ,mapsUrlFieldValue).then(() => {
-            props.handleClose(mouseEvent)
-          });
+          if (window.confirm("This will create a new " + locationType + " " + nameFieldValue))
+          props.jiraHelper?.createIssue(nameFieldValue, urlFieldValue, mapsUrlFieldValue, locationType).then((result: any) => {
+            console.log(result)
+            newLocationValues.id = result.key
+            props.jiraHelper.getLocation(result.key).then((result) => {
+              const locations = props.map.getLocations();
+              locations.push(result)
+              props.map.setLocations(locations)
+            })
+            props.handleClose(mouseEvent);
+          }).catch((error) => {setErrorMessage(error)})
+        } else {
+          props.jiraHelper?.updateLocation(newLocationValues).then(() => {
+            props.handleClose(mouseEvent);
+          }).catch((error) => {setErrorMessage(error)});
         }
-        return props.jiraHelper?.updateLocation(newLocationValues).then(() => {
-          props.handleClose(mouseEvent)
-        });
     }
     useEffect(() => {
     }, [])
@@ -61,6 +78,17 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
       </Modal.Header>
       <Modal.Body>
       <Form>
+      {!locationId
+        ? <Form.Group className="mb-3">
+            <Form.Label>Type de lieu</Form.Label>
+            <Form.Control as="select" aria-label="Type de lieu" onChange={handleSelectType}>
+              <option disabled>Choisissez le type de lieu</option>
+              <option value="Ecole">Ecole</option>
+              <option value="Initiative">Initiative</option>
+              <option value="Localisation">Localisation</option>
+            </Form.Control>
+          </Form.Group>
+        : <></> }
       <Form.Group className="mb-3">
         <Form.Label>Name</Form.Label>
         <Form.Control onChange={handleNameChange} value={nameFieldValue} type="text" placeholder="Enter name" />
@@ -87,6 +115,7 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
         <Form.Control as="textarea" onChange={handleDescriptionChange} rows={3} value={descriptionValue}/>
       </Form.Group>
     </Form>
+    <div>{errorMessage}</div>
 
       </Modal.Body>
       <Modal.Footer>

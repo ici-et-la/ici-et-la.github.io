@@ -18,6 +18,12 @@ const useSsrLocalStorage = (key: string, initial: string): [string, React.Dispat
     }
 }
 
+export interface MapInterface {
+    getLocations: Function
+    setLocations: Function
+    getSelectedLocation: Function
+    setSelectedLocation: Function
+}
 
 export const InteractiveMap: FC = () => {
     //  const [map, setMap] = useState(<></>);
@@ -35,6 +41,12 @@ export const InteractiveMap: FC = () => {
         setShowModal: setShowModal,
         setModalContent: setModalContent
       }
+    let map:MapInterface  = {
+        getLocations: () => { return locations },
+        setLocations: setLocations,
+        getSelectedLocation: () => { return selectedLocation },
+        setSelectedLocation: setSelectedLocation
+    }
     useEffect(() => {
         const jira_token = JSON.parse(jiraTokenResponse);
         const jiraConfig = JSON.parse(jiraConfigJson)
@@ -56,21 +68,22 @@ export const InteractiveMap: FC = () => {
      }, [jiraConfigJson,jiraTokenResponse]);
       return (
         <>
-        <MapNav jiraHelper={jiraHelper}></MapNav>
+        <MapNav map={map} jiraHelper={jiraHelper}></MapNav>
         <div id="container">
             <div id="sidebar">
                 <div className="sidebar-wrapper">
-                    <Table>
-                        <tbody>
-                            <LocationRows modal={modal} jiraHelper={jiraHelper} locations={locations} selected={selectedLocation} columns={["label"]} actions={["edit", "locate"]}></LocationRows>
-
-                        </tbody>
-
-                    </Table>
-
+                    <div id="features">
+                        <div className="sidebar-table">
+                            <Table>
+                                <tbody>
+                                    <LocationRows map={map} modal={modal} jiraHelper={jiraHelper} locations={locations} selected={selectedLocation} columns={["label"]} actions={["edit", "locate"]}></LocationRows>
+                                </tbody>
+                            </Table>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <JiraMap jiraHelper={jiraHelper} modal={modal} locations={locations} selected={selectedLocation}></JiraMap>   
+            <JiraMap map={map} jiraHelper={jiraHelper} modal={modal} locations={locations} selected={selectedLocation}></JiraMap>   
         </div>
         <Modal show={showmodal} onHide={handleCloseModal}>
             {modalContent}

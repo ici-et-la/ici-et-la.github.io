@@ -6,12 +6,14 @@ import { MapLocation } from "../../../lib/Location";
 import MapModal from "./MapModal";
 import EditLocation from '../EditLocation';
 import { JiraHelper } from '../../../lib/jira_helper';
+import { MapInterface } from './InteractiveMap';
 
 interface InteractiveMarkerProps {
     location: MapLocation
     selected?: boolean
     modal: MapModal
-    jiraHelper: JiraHelper
+    jiraHelper: JiraHelper,
+    map: MapInterface
 }
 
 const InteractiveMarker: FC<InteractiveMarkerProps> = (props: InteractiveMarkerProps) => {
@@ -53,7 +55,7 @@ const InteractiveMarker: FC<InteractiveMarkerProps> = (props: InteractiveMarkerP
     const getHandleShowEdit = (location: MapLocation) => {
         return () => {
           modal.setModalContent(<>
-            <EditLocation title="Edit location" location={location} jiraHelper={props.jiraHelper} handleClose={handleCloseModal}></EditLocation>
+            <EditLocation map={props.map} title="Edit location" location={location} jiraHelper={props.jiraHelper} handleClose={handleCloseModal}></EditLocation>
           </>)
           modal.setShowModal(true);
         }

@@ -8,8 +8,10 @@ import Button from 'react-bootstrap/Button';
 import EditLocation from "../EditLocation";
 import { JiraHelper } from "../../../lib/jira_helper";
 import LocationsListModal from "../LocationsListModal";
+import { MapInterface } from "./InteractiveMap";
 interface MapNavProps {
   jiraHelper?: JiraHelper
+  map: MapInterface
 }
 export const MapNav: FC<MapNavProps> = (props: MapNavProps) => {
   const [showmodal, setShowModal] = useState(false);
@@ -39,13 +41,13 @@ export const MapNav: FC<MapNavProps> = (props: MapNavProps) => {
     
     const handleShowCreate = () => {
         setModalContent(<>
-        <EditLocation title="Create Location" jiraHelper={helper} handleClose={handleCloseModal}></EditLocation>
+        <EditLocation map={props.map} location={undefined} title="Create Location" jiraHelper={helper} handleClose={handleCloseModal}></EditLocation>
         </>)
         setShowModal(true);
     }
     const handleShowUnlocated = () => {
       setModalContent(<>
-        <LocationsListModal jiraHelper={helper} handleClose={handleCloseModal}></LocationsListModal>
+        <LocationsListModal map={props.map} jiraHelper={helper} handleClose={handleCloseModal}></LocationsListModal>
       </>)
       setShowModal(true);
     }

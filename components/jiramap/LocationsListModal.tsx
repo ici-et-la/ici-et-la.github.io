@@ -2,19 +2,21 @@ import { FC, MouseEventHandler, useEffect, useState } from "react";
 import { Button, Modal, Table } from "react-bootstrap";
 import { JiraHelper } from "../../lib/jira_helper";
 import { MapLocation } from "../../lib/Location";
+import { MapInterface } from "./interactiveMap/InteractiveMap";
 import { LocationTable } from "./locationlist/LocationTable";
 
 
 interface LocationsListProps {
     handleClose: MouseEventHandler,
-    jiraHelper: JiraHelper
+    jiraHelper: JiraHelper,
+    map: MapInterface
 }
 export const LocationsListModal: FC<LocationsListProps> = (props: LocationsListProps) => {
   // if (!props.jiraHelper) return <><h4>Missing component configuration</h4></>
   const [locationsTable, setLocationsTable] = useState(<></>)
   useEffect(() => {
     props.jiraHelper?.getUnlocatedLocations().then((data) => {
-      setLocationsTable(<LocationTable jiraHelper={props.jiraHelper} locations={data as Array<MapLocation>} ></LocationTable>)      
+      setLocationsTable(<LocationTable map={props.map} jiraHelper={props.jiraHelper} locations={data as Array<MapLocation>} ></LocationTable>)      
     })
 
   },[])
