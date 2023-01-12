@@ -42,7 +42,7 @@ export class JiraHelper {
                 label: issue.fields.summary,
                 status: issue.fields.status.name,
                 maps_url: issue.fields.customfield_10038, 
-                description: issue.fields.description,
+                description: issue.fields.description?.content[0]?.content[0]?.text,
                 url: issue.fields.customfield_10035,
                 type: loctype.hasOwnProperty(issue.fields.issuetype.name) ? loctype[issue.fields.issuetype.name] : loctype["Localisation"],
                 position: [parseFloat(issue.fields.customfield_10039),parseFloat(issue.fields.customfield_10040)]

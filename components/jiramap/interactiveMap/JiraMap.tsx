@@ -7,16 +7,23 @@ import "leaflet/dist/leaflet.css";
 
 import * as L from "leaflet";
 import InteractiveMarker from "./InteractiveMarker";
+import MapModal from "./MapModal";
+import { JiraHelper } from "../../../lib/jira_helper";
 
 
 
 interface MapProps {
     locations?: Array<MapLocation>,
-    selected?: MapLocation
+    selected?: MapLocation,
+    modal: MapModal,
+    jiraHelper?: JiraHelper
 }
 
-export const Map: FC<MapProps> = (props: MapProps) => {
+export const JiraMap: FC<MapProps> = (props: MapProps) => {
     const [markers,setMarkers] = useState(<></>);
+    
+    
+
     useEffect(() => {
         const allMarkers = props.locations?.map( 
             (location: MapLocation, index: number) => {
@@ -28,7 +35,7 @@ export const Map: FC<MapProps> = (props: MapProps) => {
                 try {
                     if ( location.position && !(location.position[0] || location.position[1] )) { return null }
                     
-                    return <InteractiveMarker key={index} location={location} selected={selected}></InteractiveMarker>
+                    return <InteractiveMarker jiraHelper={helper} modal={props.modal} key={index} location={location} selected={selected}></InteractiveMarker>
                 } catch (e) {
                     console.error(e)
                     return null
@@ -38,6 +45,10 @@ export const Map: FC<MapProps> = (props: MapProps) => {
         setMarkers(<>{allMarkers}</>);
 
     }, [props.locations, props.selected])
+
+    if (!props.jiraHelper) return <h4>Interactive map is loading</h4>
+    const helper: JiraHelper = props.jiraHelper;
+
     return(<>
     <MapContainer id="map" center={[45.805, -1.49]} zoom={6} scrollWheelZoom={true}>
             <TileLayer
@@ -49,4 +60,4 @@ export const Map: FC<MapProps> = (props: MapProps) => {
     </>)
 }
 
-export default Map
+export default JiraMap

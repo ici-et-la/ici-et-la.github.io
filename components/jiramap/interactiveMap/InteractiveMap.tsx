@@ -1,13 +1,14 @@
 import { FC, useEffect, useState } from "react";
 
 import { loctype, MapLocation } from "../../../lib/Location";
-import { Map } from './Map'
+import { JiraMap } from './JiraMap'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import MapNav from "./MapNav";
 import { JiraHelper } from "../../../lib/jira_helper";
-import { Col, Container, Row, Table } from "react-bootstrap";
+import { Col, Container, Modal, Row, Table } from "react-bootstrap";
 import LocationRows from "../locationlist/LocationRows";
+import MapModal from "./MapModal";
 
 const useSsrLocalStorage = (key: string, initial: string): [string, React.Dispatch<string>] => {
     if (typeof window === 'undefined') {
@@ -17,6 +18,7 @@ const useSsrLocalStorage = (key: string, initial: string): [string, React.Dispat
     }
 }
 
+
 export const InteractiveMap: FC = () => {
     //  const [map, setMap] = useState(<></>);
     const [jiraTokenResponse, setJIRATokenResponse] = useSsrLocalStorage("jiraTokenResponse","");
@@ -24,8 +26,15 @@ export const InteractiveMap: FC = () => {
     const [jiraHelper, setJiraHelper] = useState<JiraHelper>()
     const [selectedLocation, setSelectedLocation] = useState<MapLocation>()
     const [locations, setLocations] = useState<Array<MapLocation>>()
+    const [showmodal, setShowModal] = useState(false)
+    const [modalContent, setModalContent] = useState(<>Loading</>)
     
-    const [mapContent, setMapContent] = useState(<>Loading</>)
+    const handleCloseModal = () => setShowModal(false);
+    
+    let modal: MapModal = {
+        setShowModal: setShowModal,
+        setModalContent: setModalContent
+      }
     useEffect(() => {
         const jira_token = JSON.parse(jiraTokenResponse);
         const jiraConfig = JSON.parse(jiraConfigJson)
@@ -53,7 +62,7 @@ export const InteractiveMap: FC = () => {
                 <div className="sidebar-wrapper">
                     <Table>
                         <tbody>
-                            <LocationRows jiraHelper={jiraHelper} locations={locations} selected={selectedLocation} columns={["label"]} actions={["edit", "locate"]}></LocationRows>
+                            <LocationRows modal={modal} jiraHelper={jiraHelper} locations={locations} selected={selectedLocation} columns={["label"]} actions={["edit", "locate"]}></LocationRows>
 
                         </tbody>
 
@@ -61,9 +70,11 @@ export const InteractiveMap: FC = () => {
 
                 </div>
             </div>
-            <Map locations={locations} selected={selectedLocation}></Map>
+            <JiraMap jiraHelper={jiraHelper} modal={modal} locations={locations} selected={selectedLocation}></JiraMap>   
         </div>
-
+        <Modal show={showmodal} onHide={handleCloseModal}>
+            {modalContent}
+        </Modal>
         </>
       )
     }

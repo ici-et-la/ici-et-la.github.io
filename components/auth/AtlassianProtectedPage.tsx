@@ -21,7 +21,7 @@ interface ProtectedPageProps {
 export const AtlassianProtectedPage: React.FC<ProtectedPageProps> = (props: ProtectedPageProps) => {
     
     const [jiraConfigJson, setJiraConfigJson] = useSsrLocalStorage("jiraConfigJson","");
-    const [pageContent, setPageContent] = useState(<></>);
+    const [pageContent, setPageContent] = useState(<>Please wait while page is finishing loading</>);
     const [jiraTokenResponse, setJIRATokenResponse] = useSsrLocalStorage("jiraTokenResponse","");
     // Timestamp of the response
     const [jiraTokenResponseTime, setJIRATokenResponseTime] = useSsrLocalStorage("jiraTokenResponseTime","");
@@ -101,7 +101,7 @@ export const AtlassianProtectedPage: React.FC<ProtectedPageProps> = (props: Prot
     const google_login_elem = <>
     <main>
         You are not authenticated
-        <button onClick={() => login()}>
+        <button onClick={() => { login()}}>
         Authenticate 🚀{' '}
         </button>
         </main>
@@ -113,9 +113,15 @@ export const AtlassianProtectedPage: React.FC<ProtectedPageProps> = (props: Prot
         
         getJIRAToken(tokenResponse, () => {});
     }
-
+    const onGoogleFailureHandler = (error: any) => {
+        console.log(error)
+        setPageContent(<>
+            <h4>Error while initialising app</h4>
+        </>)
+    }
     const login = useGoogleLogin({
         onSuccess: onGoogleSuccessHandler,
+        onError: onGoogleFailureHandler,
         scope: "https://www.googleapis.com/auth/spreadsheets.readonly"
     });
     const getGoogleToken = (callback: Function) => {
@@ -148,15 +154,27 @@ export const AtlassianProtectedPage: React.FC<ProtectedPageProps> = (props: Prot
     }
     useEffect(() => {
         
-        if (!isRendered) {
-            setRendered(true)
-            getGoogleToken((google_token:any) => {
+        const onPageLoad = () => {
+            if (!(window as any).google) return setPageContent(<><h3>App initialization failure (Missing third-party content)</h3></>);
+            if (!isRendered) {
                 setRendered(true)
-                getJIRAToken(google_token, (token: any) => {
-                    setPageContent(<>{props.children}</>)
+                getGoogleToken((google_token:any) => {
+                    setRendered(true)
+                    getJIRAToken(google_token, (token: any) => {
+                        setPageContent(<>{props.children}</>)
+                    })
                 })
-            })
-        }
+            }
+          };
+      
+          // Check if the page has already loaded
+          if (document.readyState === 'complete') {
+            onPageLoad();
+          } else {
+            window.addEventListener('load', onPageLoad);
+            // Remove the event listener when component unmounts
+            return () => window.removeEventListener('load', onPageLoad);
+          }
     }, [getGoogleToken, getJIRAToken, props.children, isRendered, setRendered]);
     return(<>
         {pageContent}
