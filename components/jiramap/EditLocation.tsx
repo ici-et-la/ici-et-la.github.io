@@ -6,7 +6,8 @@ import Form from 'react-bootstrap/Form';
 import { JiraHelper } from "../../lib/jira_helper";
 import { MapLocation } from "../../lib/Location";
 import { MapInterface } from "./interactiveMap/InteractiveMap";
-
+import { JSONTransformer } from '@atlaskit/editor-json-transformer';
+import { Editor } from '@atlaskit/editor-core';
 
 interface EditLocationProps {
     handleClose: MouseEventHandler
@@ -112,7 +113,8 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
       </Form.Group>
       <Form.Group className="mb-3">
         <Form.Label>Description</Form.Label>
-        <Form.Control as="textarea" onChange={handleDescriptionChange} rows={3} value={descriptionValue}/>
+        {/* <Form.Control as="textarea" onChange={handleDescriptionChange} rows={3} value={descriptionValue}/> */}
+        <Editor></Editor>
       </Form.Group>
     </Form>
     <div>{errorMessage}</div>
