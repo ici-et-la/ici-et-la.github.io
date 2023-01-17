@@ -41,7 +41,7 @@ export class JiraHelper {
             label: issue.fields.summary,
             status: issue.fields.status.name,
             maps_url: issue.fields.customfield_10038, 
-            description: issue.fields.description?.content[0]?.content[0]?.text,
+            description: issue.fields.description, //?.content[0]?.content[0]?.text,
             url: issue.fields.customfield_10035,
             issuetype: issue.fields.issuetype.name,
             type: loctype.hasOwnProperty(issue.fields.issuetype.name) ? loctype[issue.fields.issuetype.name] : loctype["Localisation"],
@@ -75,21 +75,7 @@ export class JiraHelper {
                     "summary": newLocationValues.label,
                     "customfield_10035": newLocationValues.url,
                     "customfield_10038": newLocationValues.maps_url?.substring(0,254),
-                    "description": {
-                        "type": "doc",
-                        "version": 1,
-                        "content": [
-                            {
-                                "type": "paragraph",
-                                "content": [
-                                    {
-                                        "type": "text",
-                                        "text": newLocationValues.description
-                                    }
-                                ]
-                            }
-                        ]
-                    }
+                    "description": newLocationValues.description
                 }
             }
             fetch_options.body = JSON.stringify(issue_data)

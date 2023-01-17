@@ -19,20 +19,21 @@ interface LocationRowsProps {
 export const LocationRows: FC<LocationRowsProps> = (props:LocationRowsProps) => {
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState(<>Empty</>);
+  const handleCloseModal = () => modal.setShowModal(false);
     let modal: MapModal = {
       setShowModal: setShowModal,
-      setModalContent: setModalContent
+      setModalContent: setModalContent,
+      handleCloseModal: handleCloseModal
     }
     if (props.modal) {
       modal = props.modal
     }
-    const handleCloseModal = () => modal.setShowModal(false);
     if (!props.jiraHelper) return <h4>Interactive map is loading</h4>
     const helper: JiraHelper = props.jiraHelper;
     const getHandleShowEdit = (location: MapLocation) => {
         return () => {
           modal.setModalContent(<>
-            <EditLocation map={props.map} title="Edit location" location={location} jiraHelper={helper} handleClose={handleCloseModal}></EditLocation>
+            <EditLocation map={props.map} title="Edit location" location={location} jiraHelper={helper} handleClose={modal.handleCloseModal}></EditLocation>
           </>)
           modal.setShowModal(true);
         }

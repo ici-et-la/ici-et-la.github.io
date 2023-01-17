@@ -8,6 +8,7 @@ import { MapLocation } from "../../lib/Location";
 import { MapInterface } from "./interactiveMap/InteractiveMap";
 import { JSONTransformer } from '@atlaskit/editor-json-transformer';
 import { Editor } from '@atlaskit/editor-core';
+import { EditorView } from 'prosemirror-view';
 
 interface EditLocationProps {
     handleClose: MouseEventHandler
@@ -26,8 +27,17 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
     const [locationType, setLocationType] = useState(props.location?.issuetype ? props.location?.issuetype : "Ecole");
     
     const [statusValue, setStatus] = useState(props.location?.status ? props.location?.status : "");
-    const [descriptionValue, setDescription] = useState(props.location?.description ? props.location?.description : "");
+    const [descriptionValue, setDescription] = useState(props.location?.description ? props.location?.description : {});
     const [errorMessage, setErrorMessage] = useState("")
+    const [descriptionDom, setDescriptionDom] = useState(props.location?.description ? props.location?.description : {});
+    const serializer = new JSONTransformer()
+    
+    if (props.location?.description) {
+      console.log(props.location.description)
+      // const value = serializer.parse(props.location.description)
+      // setDescriptionDom(value)
+    }
+
     const handleNameChange = (event:any) => {
         setNameFieldValue(event.target.value)
     }
@@ -38,8 +48,11 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
     const handleMapsUrlChange = (event:any) => {
         setMapsUrlFieldValue(event.target.value)
     }
-    const handleDescriptionChange = (event:any) => {
-      setDescription(event.target.value)
+
+    const handleDescriptionChange = (editorView: EditorView) => {
+      setDescription(serializer.encode(editorView.state.doc))
+      // console.log(descriptionValue)
+      // setDescription(event.target.value)
     }
     const handleSelectType = (event: any) => {
       setLocationType(event.target.value)
@@ -106,7 +119,7 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
       </Form.Group>
       <Form.Group className="mb-3">
         <Form.Label>Google Maps URL</Form.Label>
-        <Form.Control onChange={handleMapsUrlChange} value={mapsUrlFieldValue} type="text" placeholder="Enter location url from google maps" />
+        <Form.Control onChange={handleMapsUrlChange} type="text" placeholder="Enter location url from google maps" />
         <Form.Text className="text-muted">
           Name of the place.
         </Form.Text>
@@ -114,7 +127,7 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
       <Form.Group className="mb-3">
         <Form.Label>Description</Form.Label>
         {/* <Form.Control as="textarea" onChange={handleDescriptionChange} rows={3} value={descriptionValue}/> */}
-        <Editor></Editor>
+        <Editor onChange={handleDescriptionChange} defaultValue={props.location?.description} appearance="comment"></Editor>
       </Form.Group>
     </Form>
     <div>{errorMessage}</div>

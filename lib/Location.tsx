@@ -33,7 +33,7 @@ export interface MapLocation {
     issuetype?: string,
     maps_url?: string,
     label: string,
-    description?: string,
+    description?: any,
     type?: L.Icon,
     immobilier?: [{
         label: string,

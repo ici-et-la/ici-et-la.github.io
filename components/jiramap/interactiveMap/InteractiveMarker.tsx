@@ -23,14 +23,15 @@ const InteractiveMarker: FC<InteractiveMarkerProps> = (props: InteractiveMarkerP
     const [showModal, setShowModal] = useState(false);
     const [modalContent, setModalContent] = useState(<>Empty</>);
     
+    const handleCloseModal = () => modal.setShowModal(false);
     let modal: MapModal = {
     setShowModal: setShowModal,
-    setModalContent: setModalContent
+    setModalContent: setModalContent,
+    handleCloseModal: handleCloseModal
     }
     if (props.modal) {
     modal = props.modal
     }
-    const handleCloseModal = () => modal.setShowModal(false);
     
     useEffect(() => {
             //console.log(ref)
@@ -55,7 +56,7 @@ const InteractiveMarker: FC<InteractiveMarkerProps> = (props: InteractiveMarkerP
     const getHandleShowEdit = (location: MapLocation) => {
         return () => {
           modal.setModalContent(<>
-            <EditLocation map={props.map} title="Edit location" location={location} jiraHelper={props.jiraHelper} handleClose={handleCloseModal}></EditLocation>
+            <EditLocation map={props.map} title="Edit location" location={location} jiraHelper={props.jiraHelper} handleClose={modal.handleCloseModal}></EditLocation>
           </>)
           modal.setShowModal(true);
         }

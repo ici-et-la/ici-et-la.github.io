@@ -9,9 +9,11 @@ import EditLocation from "../EditLocation";
 import { JiraHelper } from "../../../lib/jira_helper";
 import LocationsListModal from "../LocationsListModal";
 import { MapInterface } from "./InteractiveMap";
+import MapModal from "./MapModal";
 interface MapNavProps {
   jiraHelper?: JiraHelper
   map: MapInterface
+  modal?: MapModal
 }
 export const MapNav: FC<MapNavProps> = (props: MapNavProps) => {
   const [showmodal, setShowModal] = useState(false);
@@ -38,18 +40,25 @@ export const MapNav: FC<MapNavProps> = (props: MapNavProps) => {
     );
     if (!props.jiraHelper) return <h4>Interactive map is loading</h4>
     const helper: JiraHelper = props.jiraHelper;
-    
+    let modal: MapModal = {
+      setModalContent: setModalContent,
+      setShowModal: setShowModal,
+      handleCloseModal: handleCloseModal
+    }
+    if (props.modal) {
+      modal = props.modal
+    }
     const handleShowCreate = () => {
-        setModalContent(<>
-        <EditLocation map={props.map} location={undefined} title="Create Location" jiraHelper={helper} handleClose={handleCloseModal}></EditLocation>
+        modal.setModalContent(<>
+        <EditLocation map={props.map} location={undefined} title="Create Location" jiraHelper={helper} handleClose={modal.handleCloseModal}></EditLocation>
         </>)
-        setShowModal(true);
+        modal.setShowModal(true);
     }
     const handleShowUnlocated = () => {
-      setModalContent(<>
-        <LocationsListModal map={props.map} jiraHelper={helper} handleClose={handleCloseModal}></LocationsListModal>
+      modal.setModalContent(<>
+        <LocationsListModal map={props.map} jiraHelper={helper} handleClose={modal.handleCloseModal}></LocationsListModal>
       </>)
-      setShowModal(true);
+      modal.setShowModal(true);
     }
 
     return <>

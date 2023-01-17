@@ -35,9 +35,36 @@ export const InteractiveMap: FC = () => {
     const [showmodal, setShowModal] = useState(false)
     const [modalContent, setModalContent] = useState(<>Loading</>)
     
-    const handleCloseModal = () => setShowModal(false);
+    const loadMapLocations = () => {
+        return new Promise((resolve, reject) => {
+            const jira_token = JSON.parse(jiraTokenResponse);
+            const jiraConfig = JSON.parse(jiraConfigJson)
+            const helper = new JiraHelper(jiraConfig, jira_token)
+            helper.ready.then(() => {
+                console.log("helper is ready")
+                setJiraHelper(helper)
+                helper.getLocations().then((locations:Array<MapLocation>) => {
+                    locations.map((location: MapLocation, key: number) => {
+                    location.onSelectHandler = () => { 
+                        console.log("Map location.onSelectHandler : " + location.id)
+                        setSelectedLocation(location)
+                    };
+                    })
+                    setLocations(locations)
+                    resolve(locations)
+                })
+            })
+        })
+    }
+
+    const handleCloseModal = () => {
+        loadMapLocations().then(() => {
+            setShowModal(false)
+        })
+    };
     
     let modal: MapModal = {
+        handleCloseModal: handleCloseModal,
         setShowModal: setShowModal,
         setModalContent: setModalContent
       }
@@ -48,27 +75,12 @@ export const InteractiveMap: FC = () => {
         setSelectedLocation: setSelectedLocation
     }
     useEffect(() => {
-        const jira_token = JSON.parse(jiraTokenResponse);
-        const jiraConfig = JSON.parse(jiraConfigJson)
-        const helper = new JiraHelper(jiraConfig, jira_token)
-        helper.ready.then(() => {
-            console.log("helper is ready")
-            setJiraHelper(helper)
-            helper.getLocations().then((locations:Array<MapLocation>) => {
-                locations.map((location: MapLocation, key: number) => {
-                location.onSelectHandler = () => { 
-                    console.log("Map location.onSelectHandler : " + location.id)
-                    setSelectedLocation(location)
-                };
-                })
-                setLocations(locations)
-            })
-        })
+        loadMapLocations()
         //setMap(<MyAwesomeMap></MyAwesomeMap>)
      }, [jiraConfigJson,jiraTokenResponse]);
       return (
         <>
-        <MapNav map={map} jiraHelper={jiraHelper}></MapNav>
+        <MapNav map={map} modal={modal} jiraHelper={jiraHelper}></MapNav>
         <div id="container">
             <div id="sidebar">
                 <div className="sidebar-wrapper">
