@@ -3,19 +3,17 @@ import { ChangeEventHandler, FC, FormEvent, FormEventHandler, MouseEventHandler,
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { JiraHelper } from "../../lib/jira_helper";
-import { MapLocation } from "../../lib/Location";
-import { MapInterface } from "./interactiveMap/InteractiveMap";
+import { MapDataHelper } from "./MapDataHelper";
+import { MapLocation } from "./MapLocation";
 import { JSONTransformer } from '@atlaskit/editor-json-transformer';
 import { Editor } from '@atlaskit/editor-core';
 import { EditorView } from 'prosemirror-view';
 
 interface EditLocationProps {
     handleClose: MouseEventHandler
-    jiraHelper: JiraHelper
+    dataHelper: MapDataHelper
     location?: MapLocation
-    title: String,
-    map: MapInterface
+    title: String
 }
 
 export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => {
@@ -68,18 +66,11 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
         }
         if (!locationId) { // No ID ==> new issue
           if (window.confirm("This will create a new " + locationType + " " + nameFieldValue))
-          props.jiraHelper?.createIssue(nameFieldValue, urlFieldValue, mapsUrlFieldValue, locationType).then((result: any) => {
-            console.log(result)
-            newLocationValues.id = result.key
-            props.jiraHelper.getLocation(result.key).then((result) => {
-              const locations = props.map.getLocations();
-              locations.push(result)
-              props.map.setLocations(locations)
-            })
+          props.dataHelper?.createLocation(nameFieldValue, urlFieldValue, mapsUrlFieldValue, locationType).then((result: any) => {
             props.handleClose(mouseEvent);
           }).catch((error) => {setErrorMessage(error)})
         } else {
-          props.jiraHelper?.updateLocation(newLocationValues).then(() => {
+          props.dataHelper?.updateLocation(newLocationValues).then(() => {
             props.handleClose(mouseEvent);
           }).catch((error) => {setErrorMessage(error)});
         }

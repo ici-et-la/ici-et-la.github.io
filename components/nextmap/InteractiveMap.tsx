@@ -1,5 +1,5 @@
 import { FC, useEffect, useState, useRef } from "react";
-import { MapLocation } from "../../../lib/Location";
+import { MapLocation } from "./MapLocation";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 /*
@@ -8,8 +8,8 @@ import "leaflet/dist/leaflet.css";
 import * as L from "leaflet";
 import InteractiveMarker from "./InteractiveMarker";
 import MapModal from "./MapModal";
-import { JiraHelper } from "../../../lib/jira_helper";
-import { MapInterface } from "./InteractiveMap";
+import { MapDataHelper } from "./MapDataHelper";
+import { MapInterface } from "./MapInterface";
 
 
 
@@ -17,11 +17,10 @@ interface MapProps {
     locations?: Array<MapLocation>,
     selected?: MapLocation,
     modal: MapModal,
-    jiraHelper?: JiraHelper,
-    map: MapInterface
+    dataHelper?: MapDataHelper
 }
 
-export const JiraMap: FC<MapProps> = (props: MapProps) => {
+export const InteractiveMap: FC<MapProps> = (props: MapProps) => {
     const [markers,setMarkers] = useState(<></>);
     
     
@@ -37,7 +36,7 @@ export const JiraMap: FC<MapProps> = (props: MapProps) => {
                 try {
                     if ( location.position && !(location.position[0] || location.position[1] )) { return null }
                     
-                    return <InteractiveMarker map={props.map} jiraHelper={helper} modal={props.modal} key={index} location={location} selected={selected}></InteractiveMarker>
+                    return <InteractiveMarker dataHelper={helper} modal={props.modal} key={index} location={location} selected={selected}></InteractiveMarker>
                 } catch (e) {
                     console.error(e)
                     return null
@@ -48,8 +47,8 @@ export const JiraMap: FC<MapProps> = (props: MapProps) => {
 
     }, [props.locations, props.selected])
 
-    if (!props.jiraHelper) return <h4>Interactive map is loading</h4>
-    const helper: JiraHelper = props.jiraHelper;
+    if (!props.dataHelper) return <h4>Interactive map is loading</h4>
+    const helper: MapDataHelper = props.dataHelper;
 
     return(<>
     <MapContainer id="map" center={[45.805, -1.49]} zoom={6} scrollWheelZoom={true}>
@@ -62,4 +61,4 @@ export const JiraMap: FC<MapProps> = (props: MapProps) => {
     </>)
 }
 
-export default JiraMap
+export default InteractiveMap

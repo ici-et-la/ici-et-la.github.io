@@ -5,14 +5,14 @@ import NavLink from "react-bootstrap/esm/NavLink";
 import Nav from 'react-bootstrap/Nav';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import EditLocation from "../EditLocation";
-import { JiraHelper } from "../../../lib/jira_helper";
-import LocationsListModal from "../LocationsListModal";
-import { MapInterface } from "./InteractiveMap";
+import EditLocation from "./EditLocation";
+import { MapDataHelper } from "./MapDataHelper";
+import LocationsListModal from "./LocationsListModal";
+import { MapInterface } from "./MapInterface";
 import MapModal from "./MapModal";
+
 interface MapNavProps {
-  jiraHelper?: JiraHelper
-  map: MapInterface
+  dataHelper?: MapDataHelper
   modal?: MapModal
 }
 export const MapNav: FC<MapNavProps> = (props: MapNavProps) => {
@@ -38,8 +38,17 @@ export const MapNav: FC<MapNavProps> = (props: MapNavProps) => {
       </Modal.Footer>
       </>
     );
-    if (!props.jiraHelper) return <h4>Interactive map is loading</h4>
-    const helper: JiraHelper = props.jiraHelper;
+    if (!props.dataHelper) return <>
+      <Navbar bg="dark" variant="dark" fixed="top">
+        <Container>
+            <Navbar.Brand href="#home">Carte</Navbar.Brand>
+            <Nav className="me-auto">
+            <NavLink href="#Create">Create</NavLink>
+            </Nav>
+          </Container>
+      </Navbar>
+      </>
+    const helper: MapDataHelper = props.dataHelper;
     let modal: MapModal = {
       setModalContent: setModalContent,
       setShowModal: setShowModal,
@@ -50,13 +59,13 @@ export const MapNav: FC<MapNavProps> = (props: MapNavProps) => {
     }
     const handleShowCreate = () => {
         modal.setModalContent(<>
-        <EditLocation map={props.map} location={undefined} title="Create Location" jiraHelper={helper} handleClose={modal.handleCloseModal}></EditLocation>
+        <EditLocation location={undefined} title="Create Location" dataHelper={helper} handleClose={modal.handleCloseModal}></EditLocation>
         </>)
         modal.setShowModal(true);
     }
     const handleShowUnlocated = () => {
       modal.setModalContent(<>
-        <LocationsListModal map={props.map} jiraHelper={helper} handleClose={modal.handleCloseModal}></LocationsListModal>
+        <LocationsListModal jiraHelper={helper} handleClose={modal.handleCloseModal}></LocationsListModal>
       </>)
       modal.setShowModal(true);
     }
@@ -68,8 +77,6 @@ export const MapNav: FC<MapNavProps> = (props: MapNavProps) => {
           <Nav className="me-auto">
             <NavLink href="#Create" onClick={handleShowCreate}>Create</NavLink>
             <NavLink href="#Unlocated" onClick={handleShowUnlocated}>Show Unlocated</NavLink>
-            {/* <NavLink href="#features">Features</NavLink>
-            <NavLink href="#pricing">Pricing</NavLink> */}
           </Nav>
         </Container>
       </Navbar>

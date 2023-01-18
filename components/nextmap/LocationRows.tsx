@@ -1,19 +1,18 @@
 import { FC, MouseEventHandler, useState } from "react"
 import { Button, Modal } from "react-bootstrap"
-import { MapLocation } from "../../../lib/Location"
+import { MapLocation } from "./MapLocation"
 import * as Icon from "react-bootstrap-icons"
-import EditLocation from "../EditLocation"
-import { JiraHelper } from "../../../lib/jira_helper"
-import MapModal from "../interactiveMap/MapModal"
-import { MapInterface } from "../interactiveMap/InteractiveMap"
+import EditLocation from "./EditLocation"
+import { MapDataHelper } from "./MapDataHelper"
+import MapModal from "./MapModal"
+import { MapInterface } from "./MapInterface"
 interface LocationRowsProps {
     locations?: Array<MapLocation>
     columns: Array<String>
     selected?: MapLocation
     actions?: Array<String>
-    jiraHelper?: JiraHelper
+    dataHelper?: MapDataHelper
     modal?: MapModal
-    map: MapInterface
 }
 
 export const LocationRows: FC<LocationRowsProps> = (props:LocationRowsProps) => {
@@ -28,12 +27,12 @@ export const LocationRows: FC<LocationRowsProps> = (props:LocationRowsProps) => 
     if (props.modal) {
       modal = props.modal
     }
-    if (!props.jiraHelper) return <h4>Interactive map is loading</h4>
-    const helper: JiraHelper = props.jiraHelper;
+    if (!props.dataHelper) return <h4>Interactive map is loading</h4>
+    const helper: MapDataHelper = props.dataHelper;
     const getHandleShowEdit = (location: MapLocation) => {
         return () => {
           modal.setModalContent(<>
-            <EditLocation map={props.map} title="Edit location" location={location} jiraHelper={helper} handleClose={modal.handleCloseModal}></EditLocation>
+            <EditLocation title="Edit location" location={location} dataHelper={helper} handleClose={modal.handleCloseModal}></EditLocation>
           </>)
           modal.setShowModal(true);
         }

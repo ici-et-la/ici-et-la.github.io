@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { AtlassianProtectedPage } from "../components/auth/AtlassianProtectedPage"
 
-const InteractiveMap = dynamic(() => import("../components/jiramap/interactiveMap/InteractiveMap"), { ssr:false });
+const JiraMap = dynamic(() => import("../components/jiramap/JiraMap"), { ssr:false });
 
 
 
@@ -21,7 +21,7 @@ const InteractiveMapPage: NextPage = () => {
     }, [setSheetId,setSettingsTabName])
     return (<>
     <AtlassianProtectedPage google_sheet_id={sheetId} settings_tab_name={settingsTabName}>
-        <InteractiveMap></InteractiveMap>
+        <JiraMap></JiraMap>
     </AtlassianProtectedPage>
     </>)
 }

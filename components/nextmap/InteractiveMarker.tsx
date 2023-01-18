@@ -2,18 +2,17 @@ import * as Icon from 'react-bootstrap-icons'
 import { FC, useEffect, useRef, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { Marker, Popup } from "react-leaflet";
-import { MapLocation } from "../../../lib/Location";
+import { MapLocation } from "./MapLocation";
 import MapModal from "./MapModal";
-import EditLocation from '../EditLocation';
-import { JiraHelper } from '../../../lib/jira_helper';
-import { MapInterface } from './InteractiveMap';
+import EditLocation from './EditLocation';
+import { MapDataHelper } from './MapDataHelper';
+import { MapInterface } from "./MapInterface";
 
 interface InteractiveMarkerProps {
     location: MapLocation
     selected?: boolean
     modal: MapModal
-    jiraHelper: JiraHelper,
-    map: MapInterface
+    dataHelper: MapDataHelper
 }
 
 const InteractiveMarker: FC<InteractiveMarkerProps> = (props: InteractiveMarkerProps) => {
@@ -56,7 +55,7 @@ const InteractiveMarker: FC<InteractiveMarkerProps> = (props: InteractiveMarkerP
     const getHandleShowEdit = (location: MapLocation) => {
         return () => {
           modal.setModalContent(<>
-            <EditLocation map={props.map} title="Edit location" location={location} jiraHelper={props.jiraHelper} handleClose={modal.handleCloseModal}></EditLocation>
+            <EditLocation title="Edit location" location={location} dataHelper={props.dataHelper} handleClose={modal.handleCloseModal}></EditLocation>
           </>)
           modal.setShowModal(true);
         }

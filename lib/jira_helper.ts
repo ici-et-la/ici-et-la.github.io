@@ -1,7 +1,9 @@
 import { AnyTxtRecord } from "dns";
-import { loctype, MapLocation } from "./Location";
+import { LookupFunction } from "net";
+import { loctype, MapLocation } from "../components/nextmap/MapLocation";
+import { MapDataHelper } from "../components/nextmap/MapDataHelper";
 
-export class JiraHelper {
+export class JiraHelperImpl implements MapDataHelper {
     public jira_token: any;
     public jiraConfig: any;
     public jiraProject: string = "D2";
@@ -24,18 +26,18 @@ export class JiraHelper {
         this.jiraConfig = jiraConfig;
         this.jira_token = jira_token;
         const fetch_options: RequestInit = this.fetchOptions();
-        this.ready = new Promise((resolve, reject) => {
+        this.ready = new Promise<MapDataHelper>((resolve, reject) => {
             fetch("https://api.atlassian.com/oauth/token/accessible-resources", fetch_options).then((response) => {
                 response.json().then((data) => { 
                     console.log(data)
                     this.cloudId = data[0].id;
                     this.apiUrl = this.jiraConfig["jira.api_url"] + this.cloudId + this.jiraConfig["jira.api_url_suffix"];
-                    resolve(undefined)
+                    resolve(this)
                 }).catch(reject)
             }).catch(reject)
         })
     }
-    public mapIssueToLocation(issue: any,index?: number) {
+    public mapIssueToLocation(issue: any,index?: number): MapLocation {
         const location: MapLocation = {
             id: issue.key,
             label: issue.fields.summary,
@@ -50,10 +52,10 @@ export class JiraHelper {
 
         return location;
     }
-    public mapIssuesToLocations(issues:any) {
+    public mapIssuesToLocations(issues:any): Array<MapLocation> {
         return issues.map(this.mapIssueToLocation)
     }
-    public getLocation(id: string) {
+    public getLocation(id: string): Promise<MapLocation> {
         return new Promise((resolve, reject) => {
             const fetch_options: RequestInit = this.fetchOptions();
             const url = this.apiUrl + "/issue/" + id
@@ -65,7 +67,7 @@ export class JiraHelper {
         });
 
     }
-    public updateLocation(newLocationValues: MapLocation) {
+    public updateLocation(newLocationValues: MapLocation): Promise<any> {
         return new Promise((resolve, reject) => {
             const fetch_options: RequestInit = this.fetchOptions();
             const create_url = this.apiUrl + "/issue/" + newLocationValues.id
@@ -91,12 +93,12 @@ export class JiraHelper {
         })
     }
     // public getLocations() {}
-    public createIssue(name: string, url: string,google_maps_url: string, issuetype?: string) {
+    public createLocation(name: string, url: string,google_maps_url: string, locationtype?: string): Promise<any> {
         return new Promise((resolve, reject) => {
             const fetch_options: RequestInit = this.fetchOptions();
             const create_url = this.apiUrl + "/issue"
-            if (!issuetype) {
-                issuetype = "Localisation"
+            if (!locationtype) {
+                locationtype = "Localisation"
             }
             fetch_options.method = "POST"
             const issue_data = {
@@ -106,7 +108,7 @@ export class JiraHelper {
                     "customfield_10035": url,
                     "customfield_10038": google_maps_url.substring(0,254),
                     "issuetype": {
-                        "name": issuetype
+                        "name": locationtype
                     },
                     "project": {
                         "id": "10001"
@@ -144,13 +146,13 @@ export class JiraHelper {
             }).catch(reject)
         })
     }
-    public getUnlocatedLocations() {
+    public getUnlocatedLocations(): Promise<Array<MapLocation>> {
         return new Promise<Array<MapLocation>>((resolve, reject) => {
             const jql = 'project = "' + this.jiraProject + '" and type in (Ecole, Initiative, Localisation) and status IN ("Locate", Open) ORDER BY created DESC'
             this.searchIssues(jql).then(resolve).catch(reject);
         })
     }
-    public getLocations() {
+    public getLocations(): Promise<Array<MapLocation>> {
         return new Promise<Array<MapLocation>>((resolve, reject) => {
             const jql = 'project = "D2" and type in (Ecole, Initiative, Localisation) and status in ("Locate", Open, Located, "In Progress", REVIEW, ACCEPT) ORDER BY created DESC'
             this.searchIssues(jql).then(resolve).catch(reject);        
