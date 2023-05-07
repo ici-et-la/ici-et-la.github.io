@@ -22,12 +22,18 @@ class TestDataHelper implements MapDataHelper {
     }
     getLocations(): Promise<MapLocation[]> {
         return new Promise<MapLocation[]>((resolve) => {
-            const result: MapLocation = {
-                label: "Test1"
+            const result1: MapLocation = {
+                id: "0",
+                label: "Test1",
+                position: [0 , 0]
             }
-            
+            const result2: MapLocation = {
+                id: "1",
+                label: "Paris",
+                position: [48.8589466,2.2769955]
+            }
             resolve ([
-                result
+                result1, result2
             ])
         })
     }
@@ -41,7 +47,6 @@ class TestDataHelper implements MapDataHelper {
 }
 
 const test_components: NextPage = (props) => {
-    const [pageContent, setPageContent] = useState(<></>)
     const helper: TestDataHelper = new TestDataHelper()
     return <>
         <MapPlotEditor dataHelper={helper}></MapPlotEditor>

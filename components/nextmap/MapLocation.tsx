@@ -26,7 +26,7 @@ let loctype: {[k: string]: any} = {
 
 export interface MapLocation {
     onSelectHandler?: Function,
-    id?: string,
+    id: string,
     position?: [lat: number, long: number]
     url?: string,
     status?: string,

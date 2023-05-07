@@ -22,21 +22,26 @@ interface MapProps {
 
 export const InteractiveMap: FC<MapProps> = (props: MapProps) => {
     const [markers,setMarkers] = useState(<></>);
-    
+    const googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+    });
     
 
     useEffect(() => {
         const allMarkers = props.locations?.map( 
-            (location: MapLocation, index: number) => {
+            (maplocation: MapLocation, index: number) => {
                 let selected = false
-                if (props.selected?.id == location.id) {
+                if (props.selected?.id == maplocation.id) {
                     selected = true
                 }
                 
                 try {
-                    if ( location.position && !(location.position[0] || location.position[1] )) { return null }
-                    
-                    return <InteractiveMarker dataHelper={helper} modal={props.modal} key={index} location={location} selected={selected}></InteractiveMarker>
+                    if ( ! maplocation.position || 
+                            (maplocation.position && !(typeof maplocation.position[0] == 'number' && !isNaN(maplocation.position[0]) && typeof maplocation.position[1] == 'number' && !isNaN(maplocation.position[1])) )) { return null }
+                    console.log("Creating marker for " + maplocation.label + " at " + maplocation.position)
+                    const mapMarker = <InteractiveMarker dataHelper={helper} modal={props.modal} key={index} location={maplocation} selected={selected}></InteractiveMarker>
+                    return mapMarker
                 } catch (e) {
                     console.error(e)
                     return null
@@ -56,6 +61,11 @@ export const InteractiveMap: FC<MapProps> = (props: MapProps) => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+            {/* <TileLayer 
+                maxZoom={20}
+                subdomains={['mt0','mt1','mt2','mt3']}
+                url='http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+            /> */}
             {markers}
         </MapContainer>
     </>)

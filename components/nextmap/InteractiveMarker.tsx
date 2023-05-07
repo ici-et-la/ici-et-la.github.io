@@ -2,11 +2,12 @@ import * as Icon from 'react-bootstrap-icons'
 import { FC, useEffect, useRef, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { Marker, Popup } from "react-leaflet";
-import { MapLocation } from "./MapLocation";
+import { loctype, MapLocation } from "./MapLocation";
 import MapModal from "./MapModal";
 import EditLocation from './EditLocation';
 import { MapDataHelper } from './MapDataHelper';
 import { MapInterface } from "./MapInterface";
+import { LocationCard } from './LocationCard';
 
 interface InteractiveMarkerProps {
     location: MapLocation
@@ -31,18 +32,19 @@ const InteractiveMarker: FC<InteractiveMarkerProps> = (props: InteractiveMarkerP
     if (props.modal) {
     modal = props.modal
     }
-    
+    props.location.type = props.location.type ? props.location.type : loctype["Localisation"];
     useEffect(() => {
-            //console.log(ref)
-            if (ref && props.selected) {
-                const maref: any = ref
-                maref.openPopup()
-            } 
-            if (ref && !props.selected) {
-                const maref: any = ref
-                maref.closePopup()
-            } 
-    }, [ref,refReady,props.selected])
+        console.log("Rendering marker for " + props.location.label)
+        //console.log(ref)
+        if (ref && props.selected) {
+            const maref: any = ref
+            if (maref && refReady) maref.openPopup()
+        } 
+        if (ref && !props.selected) {
+            const maref: any = ref
+            if (maref && refReady) maref.closePopup()
+        } 
+    }, [ref,refReady,props.selected,props.location])
     
     const initMarker = (ref:any) => {
         if (ref && props.selected) {
@@ -69,14 +71,7 @@ const InteractiveMarker: FC<InteractiveMarkerProps> = (props: InteractiveMarkerP
         }}
         >
         <Popup>
-            <div>
-                {props.location.url
-                    ? <a href={props.location.url} target="_new">{props.location.label}</a> 
-                    : <span>{props.location.label}</span>
-                }
-                <Button variant="secondary" size="sm" onClick={getHandleShowEdit(props.location)}><Icon.Pencil/></Button>
-            </div>
-            {/* <div>{location.}</div> */}
+            <LocationCard editHandler={getHandleShowEdit(props.location)} location={props.location} />
         </Popup>
     </Marker>
     {!props.modal

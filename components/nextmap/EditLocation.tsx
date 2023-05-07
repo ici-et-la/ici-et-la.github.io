@@ -57,19 +57,19 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
     }
     const handleSave: MouseEventHandler = async (mouseEvent) => {
         console.log(nameFieldValue)
-        const newLocationValues: MapLocation = {
-          id: locationId,
-          label: nameFieldValue,
-          url: urlFieldValue,
-          maps_url: mapsUrlFieldValue,
-          description: descriptionValue
-        }
         if (!locationId) { // No ID ==> new issue
           if (window.confirm("This will create a new " + locationType + " " + nameFieldValue))
           props.dataHelper?.createLocation(nameFieldValue, urlFieldValue, mapsUrlFieldValue, locationType).then((result: any) => {
             props.handleClose(mouseEvent);
           }).catch((error) => {setErrorMessage(error)})
         } else {
+          const newLocationValues: MapLocation = {
+            id: locationId,
+            label: nameFieldValue,
+            url: urlFieldValue,
+            maps_url: mapsUrlFieldValue,
+            description: descriptionValue
+          }
           props.dataHelper?.updateLocation(newLocationValues).then(() => {
             props.handleClose(mouseEvent);
           }).catch((error) => {setErrorMessage(error)});
