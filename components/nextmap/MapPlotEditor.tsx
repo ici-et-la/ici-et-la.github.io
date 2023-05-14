@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 
-import { loctype, MapLocation } from "./MapLocation";
+import { loctype, MapLocation } from "./data/MapLocation";
 import { InteractiveMap } from './InteractiveMap'
 import 'bootstrap/dist/css/bootstrap.min.css';
 

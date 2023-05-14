@@ -1,6 +1,6 @@
 import { FC, MouseEventHandler, useState } from "react"
 import { Button, Modal } from "react-bootstrap"
-import { MapLocation } from "./MapLocation"
+import { MapLocation } from "./data/MapLocation"
 import * as Icon from "react-bootstrap-icons"
 import EditLocation from "./EditLocation"
 import { MapDataHelper } from "./MapDataHelper"

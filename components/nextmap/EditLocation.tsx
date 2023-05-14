@@ -4,7 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { MapDataHelper } from "./MapDataHelper";
-import { MapLocation } from "./MapLocation";
+import { MapLocation } from "./data/MapLocation";
 import { JSONTransformer } from '@atlaskit/editor-json-transformer';
 import { Editor } from '@atlaskit/editor-core';
 import { EditorView } from 'prosemirror-view';
@@ -29,7 +29,7 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
     const [errorMessage, setErrorMessage] = useState("")
     const [descriptionDom, setDescriptionDom] = useState(props.location?.description ? props.location?.description : {});
     const serializer = new JSONTransformer()
-    
+    let applyButton = <></>
     if (props.location?.description) {
       console.log(props.location.description)
       // const value = serializer.parse(props.location.description)
@@ -77,6 +77,15 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
     }
     useEffect(() => {
     }, [])
+    if (!locationId) { // No ID ==> new issue
+      applyButton = <Button variant="primary" onClick={handleSave}>
+      Create
+    </Button>
+    } else {
+      applyButton = <Button variant="primary" onClick={handleSave}>
+      Save
+    </Button>
+    }
     return <>
         <Modal.Header closeButton>
         <Modal.Title>{props.title}</Modal.Title>
@@ -105,14 +114,14 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
         <Form.Label>URL</Form.Label>
         <Form.Control onChange={handleUrlChange} value={urlFieldValue} type="text" placeholder="Enter url" />
         <Form.Text className="text-muted">
-          Name of the place.
+          website/page URL of the place
         </Form.Text>
       </Form.Group>
       <Form.Group className="mb-3">
         <Form.Label>Google Maps URL</Form.Label>
         <Form.Control onChange={handleMapsUrlChange} type="text" placeholder="Enter location url from google maps" />
         <Form.Text className="text-muted">
-          Name of the place.
+          Long google maps url
         </Form.Text>
       </Form.Group>
       <Form.Group className="mb-3">
@@ -128,9 +137,7 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
         <Button variant="secondary" onClick={props.handleClose}>
           Cancel
         </Button>
-        <Button variant="primary" onClick={handleSave}>
-          Create
-        </Button>
+        {applyButton}
       </Modal.Footer>
       </>
 }

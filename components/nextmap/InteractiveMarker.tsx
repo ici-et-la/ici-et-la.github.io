@@ -2,7 +2,7 @@ import * as Icon from 'react-bootstrap-icons'
 import { FC, useEffect, useRef, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { Marker, Popup } from "react-leaflet";
-import { loctype, MapLocation } from "./MapLocation";
+import { loctype, MapLocation } from "./data/MapLocation";
 import MapModal from "./MapModal";
 import EditLocation from './EditLocation';
 import { MapDataHelper } from './MapDataHelper';
@@ -71,7 +71,7 @@ const InteractiveMarker: FC<InteractiveMarkerProps> = (props: InteractiveMarkerP
         }}
         >
         <Popup>
-            <LocationCard editHandler={getHandleShowEdit(props.location)} location={props.location} />
+            <LocationCard editHandler={getHandleShowEdit(props.location)} location={props.location} dataHelper={props.dataHelper} modal={props.modal}/>
         </Popup>
     </Marker>
     {!props.modal

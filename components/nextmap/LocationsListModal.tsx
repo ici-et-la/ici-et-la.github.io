@@ -1,7 +1,7 @@
 import { FC, MouseEventHandler, useEffect, useState } from "react";
 import { Button, Modal, Table } from "react-bootstrap";
 import { MapDataHelper } from "./MapDataHelper";
-import { MapLocation } from "./MapLocation";
+import { MapLocation } from "./data/MapLocation";
 import { MapInterface } from "./MapInterface";
 import { LocationTable } from "./LocationTable";
 

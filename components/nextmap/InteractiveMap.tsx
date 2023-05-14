@@ -1,5 +1,5 @@
 import { FC, useEffect, useState, useRef } from "react";
-import { MapLocation } from "./MapLocation";
+import { MapLocation } from "./data/MapLocation";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 /*

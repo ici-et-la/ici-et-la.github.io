@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Table } from "react-bootstrap";
 import { MapDataHelper } from "./MapDataHelper";
-import { MapLocation } from "./MapLocation";
+import { MapLocation } from "./data/MapLocation";
 import LocationRows from "./LocationRows";
 import { MapInterface } from "./MapInterface";
 import MapModal from "./MapModal";

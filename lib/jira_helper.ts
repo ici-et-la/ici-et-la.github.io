@@ -1,7 +1,8 @@
 import { AnyTxtRecord } from "dns";
 import { LookupFunction } from "net";
-import { loctype, MapLocation } from "../components/nextmap/MapLocation";
+import { loctype, MapLocation } from "../components/nextmap/data/MapLocation";
 import { MapDataHelper } from "../components/nextmap/MapDataHelper";
+import { LocationReview } from "../components/nextmap/data/LocationReview";
 
 export class JiraHelperImpl implements MapDataHelper {
     public jira_token: any;
@@ -32,12 +33,41 @@ export class JiraHelperImpl implements MapDataHelper {
                     console.log(data)
                     this.cloudId = data[0].id;
                     this.apiUrl = this.jiraConfig["jira.api_url"] + this.cloudId + this.jiraConfig["jira.api_url_suffix"];
-                    resolve(this)
+                    fetch(this.apiUrl + "/myself", fetch_options).then((response) => {
+                        response.json().then((userData) => {
+                            console.log(userData);
+                            resolve(this)
+                        }).catch(reject)
+                    }).catch(reject)
                 }).catch(reject)
             }).catch(reject)
         })
     }
+    public mapLocationReview(issue: any, index?: number): LocationReview {
+            const review: LocationReview = {
+                id: issue.key,
+                summary: issue.fields.summary,
+                
+            }
+            if (issue.fields.description) {
+                review.description = issue.fields.description
+            }
+            return review
+
+    }
     public mapIssueToLocation(issue: any,index?: number): MapLocation {
+        const helper: JiraHelperImpl = this;
+        function mapLocationReview(issue: any, index?: number): LocationReview {
+            const review: LocationReview = {
+                id: issue.key,
+                summary: issue.fields.summary,
+                
+            }
+            if (issue.fields.description) {
+                review.description = issue.fields.description
+            }
+            return review
+        }
         const location: MapLocation = {
             id: issue.key,
             label: issue.fields.summary,
@@ -47,26 +77,29 @@ export class JiraHelperImpl implements MapDataHelper {
             url: issue.fields.customfield_10035,
             issuetype: issue.fields.issuetype.name,
             type: loctype.hasOwnProperty(issue.fields.issuetype.name) ? loctype[issue.fields.issuetype.name] : loctype["Localisation"],
-            position: [parseFloat(issue.fields.customfield_10039),parseFloat(issue.fields.customfield_10040)]
+            position: [parseFloat(issue.fields.customfield_10039),parseFloat(issue.fields.customfield_10040)],
+            reviews: issue.fields.subtasks.filter((subtask: any) => subtask.fields.issuetype.name == "LocalisationReview").map(mapLocationReview)
         };
-
+        console.log(location)
         return location;
     }
     public mapIssuesToLocations(issues:any): Array<MapLocation> {
         return issues.map(this.mapIssueToLocation)
     }
     public getLocation(id: string): Promise<MapLocation> {
+        const helper = this;
         return new Promise((resolve, reject) => {
             const fetch_options: RequestInit = this.fetchOptions();
             const url = this.apiUrl + "/issue/" + id
             fetch(url, fetch_options).then((response) => {
                 response.json().then((result) => {
-                    resolve(this.mapIssueToLocation(result))
+                    resolve(this.mapIssueToLocation(helper,result))
                 }).catch(reject)
             })
         });
 
     }
+
     public updateLocation(newLocationValues: MapLocation): Promise<any> {
         return new Promise((resolve, reject) => {
             const fetch_options: RequestInit = this.fetchOptions();
@@ -90,6 +123,27 @@ export class JiraHelperImpl implements MapDataHelper {
             fetch(create_url, fetch_options).then((response) => {
                 if (response.status === 204) resolve(null)
             }).catch(reject)
+        })
+    }
+    updateReview(review: LocationReview): Promise<any> {
+        return new Promise((resolve, reject) => {
+
+        })
+    }
+    createReview(review: LocationReview): Promise<any> {
+        return new Promise((resolve, reject) => {
+            
+        })
+    }
+    getReview(reviewId: string): Promise<LocationReview> {
+        return new Promise((resolve, reject) => {
+            const fetch_options: RequestInit = this.fetchOptions();
+            const url = this.apiUrl + "/issue/" + reviewId
+            fetch(url, fetch_options).then((response) => {
+                response.json().then((result) => {
+                    resolve(this.mapLocationReview(result))
+                }).catch(reject)
+            })
         })
     }
     // public getLocations() {}

@@ -6,11 +6,21 @@ import { useEffect, useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { InteractiveMapSideBar } from "../components/nextmap/InteractiveMapSidebar";
 import { MapDataHelper } from "../components/nextmap/MapDataHelper";
-import { MapLocation } from "../components/nextmap/MapLocation";
+import { MapLocation } from "../components/nextmap/data/MapLocation";
+import { LocationReview } from "../components/nextmap/data/LocationReview";
 
 const MapPlotEditor = dynamic(() => import("../components/nextmap/MapPlotEditor"), { ssr:false });
 
 class TestDataHelper implements MapDataHelper {
+    getReview(id: string): Promise<LocationReview> {
+        throw new Error("Method not implemented.");
+    }
+    createReview(review: LocationReview): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
+    updateReview(review: LocationReview): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
     getUnlocatedLocations(): Promise<MapLocation[]> {
         throw new Error("Method not implemented.");
     }

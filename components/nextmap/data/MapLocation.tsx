@@ -1,5 +1,6 @@
 
 import * as L from "leaflet";
+import { LocationReview } from "./LocationReview";
 
 const defaultIcon = new L.Icon({
     iconUrl: "/map-pins/map-pin-basic.svg",
@@ -40,6 +41,7 @@ export interface MapLocation {
         url: string,
         prix: number
     }]
+    reviews?: Array<LocationReview>
 }
 
 export {loctype}
