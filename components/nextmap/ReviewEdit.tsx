@@ -23,16 +23,12 @@ export const ReviewEdit: FC<EditReviewProps> = (props:EditReviewProps) => {
     const locationId = props.location?.id ? props.location?.id : undefined;
     const reviewId = props.review?.id ? props.review?.id : undefined;
     const [summaryFieldValue, setSummaryFieldValue] = useState(props.review?.summary ? props.review?.summary : "");
-    const [descriptionValue, setDescription] = useState(props.location?.description ? props.location?.description : {});
+    const [descriptionFieldValue, setDescriptionFieldValue] = useState(props.review?.description ? props.review?.description : {});
     const [errorMessage, setErrorMessage] = useState("")
-    const [descriptionDom, setDescriptionDom] = useState(props.location?.description ? props.location?.description : {});
+    const [locationDescription, setLocationDescription] = useState(props.location?.description ? props.location?.description : {});
     const serializer = new JSONTransformer()
     let applyButton = <></>
-    if (props.location?.description) {
-      console.log(props.location.description)
-      // const value = serializer.parse(props.location.description)
-      // setDescriptionDom(value)
-    }
+
 
     const handleSummaryChange = (event:any) => {
         setSummaryFieldValue(event.target.value)
@@ -40,7 +36,7 @@ export const ReviewEdit: FC<EditReviewProps> = (props:EditReviewProps) => {
     
 
     const handleDescriptionChange = (editorView: EditorView) => {
-      setDescription(serializer.encode(editorView.state.doc))
+      setDescriptionFieldValue(serializer.encode(editorView.state.doc))
       // console.log(descriptionValue)
       // setDescription(event.target.value)
     }
@@ -50,7 +46,7 @@ export const ReviewEdit: FC<EditReviewProps> = (props:EditReviewProps) => {
           if (window.confirm("This will create a new review " + summaryFieldValue)) {
             const newReview: LocationReview = {
                 summary: summaryFieldValue,
-                description: descriptionValue,
+                description: descriptionFieldValue,
                 locationId: locationId
               }
             props.dataHelper?.createReview(newReview).then((result: any) => {
@@ -61,7 +57,7 @@ export const ReviewEdit: FC<EditReviewProps> = (props:EditReviewProps) => {
           const newReviewValues: LocationReview = {
             id: reviewId,
             summary: summaryFieldValue,
-            description: descriptionValue,
+            description: descriptionFieldValue,
             locationId: locationId
           }
           props.dataHelper?.updateReview(newReviewValues).then(() => {
@@ -97,7 +93,7 @@ export const ReviewEdit: FC<EditReviewProps> = (props:EditReviewProps) => {
       <Form.Group className="mb-3">
         <Form.Label>Description</Form.Label>
         {/* <Form.Control as="textarea" onChange={handleDescriptionChange} rows={3} value={descriptionValue}/> */}
-        <Editor onChange={handleDescriptionChange} defaultValue={props.location?.description} appearance="comment"></Editor>
+        <Editor onChange={handleDescriptionChange} defaultValue={props.review?.description} appearance="comment"></Editor>
       </Form.Group>
     </Form>
     <div>{errorMessage}</div>

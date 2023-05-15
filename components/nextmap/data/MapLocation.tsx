@@ -36,6 +36,7 @@ export interface MapLocation {
     label: string,
     description?: any,
     type?: L.Icon,
+    yearPrice?: number,
     immobilier?: [{
         label: string,
         url: string,

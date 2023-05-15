@@ -76,6 +76,7 @@ export class JiraHelperImpl implements MapDataHelper {
             description: issue.fields.description, //?.content[0]?.content[0]?.text,
             url: issue.fields.customfield_10035,
             issuetype: issue.fields.issuetype.name,
+            yearPrice: parseFloat(issue.fields.customfield_10041),
             type: loctype.hasOwnProperty(issue.fields.issuetype.name) ? loctype[issue.fields.issuetype.name] : loctype["Localisation"],
             position: [parseFloat(issue.fields.customfield_10039),parseFloat(issue.fields.customfield_10040)],
             reviews: issue.fields.subtasks.filter((subtask: any) => subtask.fields.issuetype.name == "LocalisationReview").map(mapLocationReview)

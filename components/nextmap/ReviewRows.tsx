@@ -30,10 +30,10 @@ export const ReviewRows: FC<ReviewRowsProps> = (props:ReviewRowsProps) => {
     }
     if (!props.dataHelper) return <h4>Interactive map is loading</h4>
     const helper: MapDataHelper = props.dataHelper;
-    const getHandleShowEdit = (review: LocationReview) => {
+    const getHandleShowCreate = () => {
         return () => {
           modal.setModalContent(<>
-            <ReviewEdit title="Edit review" location={props.location} review={review} dataHelper={helper} handleClose={modal.handleCloseModal}></ReviewEdit>
+            <ReviewEdit title="Edit review" location={props.location} dataHelper={helper} handleClose={modal.handleCloseModal}></ReviewEdit>
           </>)
           modal.setShowModal(true);
         }
@@ -58,7 +58,7 @@ export const ReviewRows: FC<ReviewRowsProps> = (props:ReviewRowsProps) => {
       }
       </tbody>
     </Table>
-    : <><p>No reviews</p></> }
+    : <><p>No reviews <Button variant="secondary" size="sm" onClick={getHandleShowCreate()}><Icon.PlusCircle/></Button></p></> }
     {!props.modal
       ? <Modal show={showModal} onHide={handleCloseModal}>
           {modalContent}

@@ -6,5 +6,5 @@ export interface LocationReview {
     id?: string,
     creator?: string,
     summary: string,
-    description?: string
+    description?: any
  }

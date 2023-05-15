@@ -23,7 +23,7 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
     const [urlFieldValue, setUrlFieldValue] = useState(props.location?.url ? props.location?.url : "");
     const [mapsUrlFieldValue, setMapsUrlFieldValue] = useState(props.location?.maps_url ? props.location?.maps_url :"");
     const [locationType, setLocationType] = useState(props.location?.issuetype ? props.location?.issuetype : "Ecole");
-    
+    const [yearPrice, setYearPrice] = useState(props.location?.yearPrice ? props.location?.yearPrice : 0);
     const [statusValue, setStatus] = useState(props.location?.status ? props.location?.status : "");
     const [descriptionValue, setDescription] = useState(props.location?.description ? props.location?.description : {});
     const [errorMessage, setErrorMessage] = useState("")
@@ -46,6 +46,9 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
     const handleMapsUrlChange = (event:any) => {
         setMapsUrlFieldValue(event.target.value)
     }
+    const handleYearPriceChange = (event:any) => {
+      setYearPrice(event.target.value)
+  }
 
     const handleDescriptionChange = (editorView: EditorView) => {
       setDescription(serializer.encode(editorView.state.doc))
@@ -69,6 +72,9 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
             url: urlFieldValue,
             maps_url: mapsUrlFieldValue,
             description: descriptionValue
+          }
+          if (locationType == "Ecole") {
+            newLocationValues.yearPrice = yearPrice
           }
           props.dataHelper?.updateLocation(newLocationValues).then(() => {
             props.handleClose(mouseEvent);
@@ -128,6 +134,10 @@ export const EditLocation: FC<EditLocationProps> = (props:EditLocationProps) => 
         <Form.Label>Description</Form.Label>
         {/* <Form.Control as="textarea" onChange={handleDescriptionChange} rows={3} value={descriptionValue}/> */}
         <Editor onChange={handleDescriptionChange} defaultValue={props.location?.description} appearance="comment"></Editor>
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Year price for 1 chidren</Form.Label>
+        <Form.Control onChange={handleYearPriceChange} type="text" placeholder="0" />
       </Form.Group>
     </Form>
     <div>{errorMessage}</div>
